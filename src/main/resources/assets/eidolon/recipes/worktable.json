@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " y ",
+    "xxx",
+    "zzz"
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:carpet",
+      "data": 10
+    },
+    "y": {
+      "item": "eidolon:pewter_inlay"
+    },
+    "z": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    }
+  },
+  "result": {
+    "item": "eidolon:worktable"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_result",
+  "capacity": 2,
+  "power": 2,
+  "result": {
+    "item": "eidolon:lesser_soul_gem"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    }
+  ]
+}

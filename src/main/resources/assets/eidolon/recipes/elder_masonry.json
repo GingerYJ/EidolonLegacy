@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:elder_bricks"
+    }
+  },
+  "result": {
+    "item": "eidolon:elder_masonry",
+    "count": 4
+  }
+}

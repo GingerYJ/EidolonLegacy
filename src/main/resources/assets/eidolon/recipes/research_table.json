@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " c ",
+    "xxx",
+    "zzz"
+  ],
+  "key": {
+    "c": {
+      "item": "eidolon:magic_candle"
+    },
+    "x": {
+      "item": "minecraft:carpet",
+      "data": 14
+    },
+    "z": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    }
+  },
+  "result": {
+    "item": "eidolon:research_table"
+  }
+}

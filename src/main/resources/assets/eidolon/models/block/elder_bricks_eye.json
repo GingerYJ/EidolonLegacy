@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "eidolon:blocks/elder_bricks_eye"
+  }
+}

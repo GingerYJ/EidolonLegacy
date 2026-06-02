@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "y",
+    "x",
+    "y"
+  ],
+  "key": {
+    "x": {
+      "item": "eidolon:magic_candle"
+    },
+    "y": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetArcaneGold"
+    }
+  },
+  "result": {
+    "item": "eidolon:magic_candlestick"
+  }
+}

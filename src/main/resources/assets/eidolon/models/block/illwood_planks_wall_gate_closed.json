@@ -1,0 +1,6 @@
+{
+  "parent": "block/wall_gate_closed",
+  "textures": {
+    "texture": "eidolon:blocks/illwood_planks"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:smooth_stone_masonry"
+    }
+  },
+  "result": {
+    "item": "eidolon:smooth_stone_tiles",
+    "count": 4
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "eidolon:blocks/glass_tube",
+    "down": "eidolon:blocks/glass_tube",
+    "up": "eidolon:blocks/glass_tube",
+    "north": "eidolon:blocks/glass_tube",
+    "south": "eidolon:blocks/glass_tube",
+    "west": "eidolon:blocks/glass_tube",
+    "east": "eidolon:blocks/glass_tube"
+  },
+  "elements": [
+    {
+      "from": [5, 5, 5],
+      "to": [11, 11, 11],
+      "faces": {
+        "down": { "uv": [5, 5, 11, 11], "texture": "#down" },
+        "up": { "uv": [5, 5, 11, 11], "texture": "#up" },
+        "north": { "uv": [5, 5, 11, 11], "texture": "#north" },
+        "south": { "uv": [5, 5, 11, 11], "texture": "#south" },
+        "west": { "uv": [5, 5, 11, 11], "texture": "#west" },
+        "east": { "uv": [5, 5, 11, 11], "texture": "#east" }
+      }
+    }
+  ]
+}

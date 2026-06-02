@@ -1,0 +1,7 @@
+{
+  "parent": "block/wall_side",
+  "textures": {
+    "wall": "eidolon:blocks/elder_bricks",
+    "texture": "eidolon:blocks/elder_bricks"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "bottom": "eidolon:blocks/smooth_stone_masonry",
+    "top": "eidolon:blocks/smooth_stone_masonry",
+    "side": "eidolon:blocks/smooth_stone_masonry"
+  }
+}

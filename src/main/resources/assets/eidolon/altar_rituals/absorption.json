@@ -1,0 +1,32 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "absorption",
+  "capacity": 4,
+  "power": 4,
+  "result": {
+    "item": "eidolon:summoning_staff"
+  },
+  "focus": {
+    "item": "eidolon:summoning_staff"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:death_essence"
+    },
+    {
+      "item": "eidolon:tattered_cloth"
+    },
+    {
+      "item": "eidolon:tattered_cloth"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    }
+  ]
+}

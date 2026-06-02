@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "x",
+    "y",
+    "y"
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:stonebrick",
+      "data": 3
+    },
+    "y": {
+      "item": "minecraft:stone",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "eidolon:plinth"
+  }
+}

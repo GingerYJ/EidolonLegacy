@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "variant=default": { "model": "eidolon:smooth_stone_bricks" }
+  }
+}

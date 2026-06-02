@@ -1,0 +1,8 @@
+{
+  "parent": "block/half_slab",
+  "textures": {
+    "bottom": "eidolon:blocks/elder_masonry",
+    "top": "eidolon:blocks/elder_masonry",
+    "side": "eidolon:blocks/elder_masonry"
+  }
+}

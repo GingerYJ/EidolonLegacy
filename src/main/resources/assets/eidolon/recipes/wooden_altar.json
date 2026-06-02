@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "y y",
+    "y y"
+  ],
+  "key": {
+    "x": {
+      "type": "forge:ore_dict",
+      "ore": "slabWood"
+    },
+    "y": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    }
+  },
+  "result": {
+    "item": "eidolon:wooden_altar",
+    "count": 3
+  }
+}

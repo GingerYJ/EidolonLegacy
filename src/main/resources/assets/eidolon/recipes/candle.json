@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "s",
+    "t"
+  ],
+  "key": {
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "string"
+    },
+    "t": {
+      "type": "forge:ore_dict",
+      "ore": "tallow"
+    }
+  },
+  "result": {
+    "item": "eidolon:candle",
+    "count": 4
+  }
+}

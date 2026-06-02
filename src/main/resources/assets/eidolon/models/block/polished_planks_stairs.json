@@ -1,0 +1,9 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "bottom": "eidolon:blocks/polished_planks",
+    "top": "eidolon:blocks/polished_planks",
+    "side": "eidolon:blocks/polished_planks"
+  }
+}
+

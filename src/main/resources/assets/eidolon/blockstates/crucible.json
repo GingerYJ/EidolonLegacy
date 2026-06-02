@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "has_contents=false": {
+      "model": "eidolon:crucible"
+    },
+    "has_contents=true": {
+      "model": "eidolon:crucible"
+    }
+  }
+}

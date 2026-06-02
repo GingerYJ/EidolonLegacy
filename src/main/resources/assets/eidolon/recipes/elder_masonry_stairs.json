@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:elder_masonry"
+    }
+  },
+  "result": {
+    "item": "eidolon:elder_masonry_stairs",
+    "count": 4
+  }
+}

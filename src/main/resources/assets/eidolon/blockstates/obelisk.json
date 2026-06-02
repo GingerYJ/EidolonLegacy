@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "bottom=false,top=false": {
+      "model": "eidolon:obelisk"
+    },
+    "bottom=false,top=true": {
+      "model": "eidolon:obelisk_bottom"
+    },
+    "bottom=true,top=true": {
+      "model": "eidolon:obelisk_mid"
+    },
+    "bottom=true,top=false": {
+      "model": "eidolon:obelisk_top"
+    }
+  }
+}

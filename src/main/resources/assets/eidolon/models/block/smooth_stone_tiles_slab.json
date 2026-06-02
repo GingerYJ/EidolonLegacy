@@ -1,0 +1,8 @@
+{
+  "parent": "block/half_slab",
+  "textures": {
+    "bottom": "eidolon:blocks/smooth_stone_tiles",
+    "top": "eidolon:blocks/smooth_stone_tiles",
+    "side": "eidolon:blocks/smooth_stone_tiles"
+  }
+}

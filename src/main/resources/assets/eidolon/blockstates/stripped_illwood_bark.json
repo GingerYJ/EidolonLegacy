@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "axis=y": { "model": "eidolon:stripped_illwood_bark" },
+    "axis=x": { "model": "eidolon:stripped_illwood_bark", "x": 90, "y": 90 },
+    "axis=z": { "model": "eidolon:stripped_illwood_bark", "x": 90 },
+    "axis=none": { "model": "eidolon:stripped_illwood_bark" }
+  }
+}

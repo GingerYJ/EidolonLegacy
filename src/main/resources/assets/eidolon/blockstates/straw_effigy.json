@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "eidolon:straw_effigy" },
+    "facing=west": { "model": "eidolon:straw_effigy", "y": 270 },
+    "facing=south": { "model": "eidolon:straw_effigy", "y": 180 },
+    "facing=east": { "model": "eidolon:straw_effigy", "y": 90 }
+  }
+}

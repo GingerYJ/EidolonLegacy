@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    " y ",
+    "z z"
+  ],
+  "key": {
+    "x": {
+      "type": "forge:ore_dict",
+      "ore": "ingotPewter"
+    },
+    "y": {
+      "type": "forge:ore_dict",
+      "ore": "blockCoal"
+    },
+    "z": {
+      "type": "forge:ore_dict",
+      "ore": "stickWood"
+    }
+  },
+  "result": {
+    "item": "eidolon:brazier"
+  }
+}

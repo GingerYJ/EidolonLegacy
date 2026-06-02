@@ -1,0 +1,26 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "entity_summon",
+  "entity": "minecraft:stray",
+  "capacity": 3,
+  "power": 3,
+  "result": {
+    "item": "minecraft:spawn_egg",
+    "nbt": "{EntityTag:{id:\"minecraft:stray\"}}"
+  },
+  "focus": {
+    "item": "minecraft:coal",
+    "data": 1
+  },
+  "offerings": [
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ]
+}

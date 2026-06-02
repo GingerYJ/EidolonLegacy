@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "eidolon:parchment"
+    },
+    {
+      "item": "eidolon:magic_ink"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "feather"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "nuggetArcaneGold"
+    }
+  ],
+  "result": {
+    "item": "eidolon:notetaking_tools"
+  }
+}

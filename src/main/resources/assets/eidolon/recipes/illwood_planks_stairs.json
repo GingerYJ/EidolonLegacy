@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:illwood_planks"
+    }
+  },
+  "result": {
+    "item": "eidolon:illwood_planks_stairs",
+    "count": 4
+  }
+}
+

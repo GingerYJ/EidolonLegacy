@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "eidolon:soul_enchanter"
+    },
+    "facing=east": {
+      "model": "eidolon:soul_enchanter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "eidolon:soul_enchanter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "eidolon:soul_enchanter",
+      "y": 270
+    }
+  }
+}

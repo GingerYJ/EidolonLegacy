@@ -1,0 +1,13 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "eidolon:stripped_illwood_bark"
+        }
+      ]
+    }
+  ]
+}

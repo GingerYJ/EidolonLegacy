@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "eidolon:blocks/mossy_smooth_stone_bricks"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "bottom=false,top=false": { "model": "eidolon:smooth_stone_arch" },
+    "bottom=false,top=true": { "model": "eidolon:smooth_stone_arch_bottom" },
+    "bottom=true,top=true": { "model": "eidolon:smooth_stone_arch_mid" },
+    "bottom=true,top=false": { "model": "eidolon:smooth_stone_arch_top" }
+  }
+}

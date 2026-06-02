@@ -1,0 +1,26 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "entity_summon",
+  "entity": "minecraft:wither_skeleton",
+  "capacity": 4,
+  "power": 4,
+  "result": {
+    "item": "minecraft:spawn_egg",
+    "nbt": "{EntityTag:{id:\"minecraft:wither_skeleton\"}}"
+  },
+  "focus": {
+    "item": "minecraft:coal",
+    "data": 1
+  },
+  "offerings": [
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "item": "minecraft:soul_sand"
+    }
+  ]
+}

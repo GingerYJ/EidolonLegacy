@@ -1,0 +1,9 @@
+{
+  "parent": "block/half_slab",
+  "textures": {
+    "bottom": "eidolon:blocks/bone_pile",
+    "top": "eidolon:blocks/bone_pile",
+    "side": "eidolon:blocks/bone_pile"
+  }
+}
+

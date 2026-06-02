@@ -1,0 +1,26 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_transform",
+  "capacity": 4,
+  "power": 4,
+  "result": {
+    "item": "eidolon:soulbone_amulet"
+  },
+  "focus": {
+    "item": "eidolon:basic_amulet"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:imbued_bones"
+    },
+    {
+      "item": "eidolon:lesser_soul_gem"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "minecraft:bone"
+    }
+  ]
+}

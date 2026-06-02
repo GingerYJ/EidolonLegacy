@@ -1,0 +1,9 @@
+{
+  "parent": "block/half_slab",
+  "textures": {
+    "bottom": "eidolon:blocks/illwood_planks",
+    "top": "eidolon:blocks/illwood_planks",
+    "side": "eidolon:blocks/illwood_planks"
+  }
+}
+

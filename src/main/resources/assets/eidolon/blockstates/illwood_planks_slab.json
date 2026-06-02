@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "half=bottom,variant=default": { "model": "eidolon:illwood_planks_slab" },
+    "half=top,variant=default": { "model": "eidolon:illwood_planks_slab_top" }
+  }
+}
+

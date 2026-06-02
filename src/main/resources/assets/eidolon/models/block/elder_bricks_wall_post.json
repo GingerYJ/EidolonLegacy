@@ -1,0 +1,7 @@
+{
+  "parent": "block/wall_post",
+  "textures": {
+    "wall": "eidolon:blocks/elder_bricks",
+    "texture": "eidolon:blocks/elder_bricks"
+  }
+}

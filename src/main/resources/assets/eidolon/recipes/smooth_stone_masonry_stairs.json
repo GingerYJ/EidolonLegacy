@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:smooth_stone_masonry"
+    }
+  },
+  "result": {
+    "item": "eidolon:smooth_stone_masonry_stairs",
+    "count": 4
+  }
+}

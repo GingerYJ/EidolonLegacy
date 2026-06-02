@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "age=0": { "model": "eidolon:oanna_bloom_0" },
+    "age=1": { "model": "eidolon:oanna_bloom_1" }
+  }
+}

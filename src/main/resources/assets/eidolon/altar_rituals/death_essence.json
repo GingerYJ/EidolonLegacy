@@ -1,0 +1,20 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_result",
+  "capacity": 3,
+  "power": 3,
+  "result": {
+    "item": "eidolon:death_essence"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "eidolon:tattered_cloth"
+    },
+    {
+      "item": "minecraft:bone"
+    }
+  ]
+}

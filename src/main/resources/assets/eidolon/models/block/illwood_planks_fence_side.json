@@ -1,0 +1,6 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "eidolon:blocks/illwood_planks"
+  }
+}

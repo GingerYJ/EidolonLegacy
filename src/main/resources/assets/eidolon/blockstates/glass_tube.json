@@ -1,0 +1,53 @@
+{
+  "multipart": [
+    { "apply": { "model": "eidolon:glass_tube_center" } },
+    {
+      "when": { "north": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm" }
+    },
+    {
+      "when": { "south": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm", "y": 180 }
+    },
+    {
+      "when": { "east": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm", "y": 90 }
+    },
+    {
+      "when": { "west": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm", "y": 270 }
+    },
+    {
+      "when": { "up": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm_vertical" }
+    },
+    {
+      "when": { "down": "true" },
+      "apply": { "model": "eidolon:glass_tube_arm_vertical", "x": 180 }
+    },
+    {
+      "when": { "out": "north" },
+      "apply": { "model": "eidolon:glass_tube_output" }
+    },
+    {
+      "when": { "out": "south" },
+      "apply": { "model": "eidolon:glass_tube_output", "y": 180 }
+    },
+    {
+      "when": { "out": "east" },
+      "apply": { "model": "eidolon:glass_tube_output", "y": 90 }
+    },
+    {
+      "when": { "out": "west" },
+      "apply": { "model": "eidolon:glass_tube_output", "y": 270 }
+    },
+    {
+      "when": { "out": "up" },
+      "apply": { "model": "eidolon:glass_tube_output", "x": 270 }
+    },
+    {
+      "when": { "out": "down" },
+      "apply": { "model": "eidolon:glass_tube_output", "x": 90 }
+    }
+  ]
+}

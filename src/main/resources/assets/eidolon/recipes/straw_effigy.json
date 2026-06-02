@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " x ",
+    "xxx",
+    " x "
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:wheat"
+    }
+  },
+  "result": {
+    "item": "eidolon:straw_effigy"
+  }
+}

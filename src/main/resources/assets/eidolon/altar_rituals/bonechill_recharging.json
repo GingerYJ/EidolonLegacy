@@ -1,0 +1,29 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_charge",
+  "capacity": 3,
+  "power": 3,
+  "result": {
+    "item": "eidolon:bonechill_wand"
+  },
+  "focus": {
+    "item": "eidolon:bonechill_wand"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:lesser_soul_gem"
+    },
+    {
+      "item": "minecraft:snowball"
+    },
+    {
+      "item": "minecraft:snowball"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ]
+}

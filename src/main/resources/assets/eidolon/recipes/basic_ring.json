@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " y ",
+    "x x",
+    " x "
+  ],
+  "key": {
+    "x": {
+      "type": "forge:ore_dict",
+      "ore": "ingotArcaneGold"
+    },
+    "y": {
+      "item": "eidolon:soul_shard"
+    }
+  },
+  "result": {
+    "item": "eidolon:basic_ring"
+  }
+}

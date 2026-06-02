@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#S#",
+    "#S#"
+  ],
+  "key": {
+    "#": { "item": "eidolon:illwood_planks" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "item": "eidolon:illwood_planks_fence",
+    "count": 3
+  }
+}

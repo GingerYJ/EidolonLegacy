@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "half=bottom,variant=default": { "model": "eidolon:elder_masonry_slab" },
+    "half=top,variant=default": { "model": "eidolon:elder_masonry_slab_top" }
+  }
+}

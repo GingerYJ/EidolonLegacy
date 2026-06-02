@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "half=bottom,variant=default": { "model": "eidolon:bone_pile_slab" },
+    "half=top,variant=default": { "model": "eidolon:bone_pile_slab_top" }
+  }
+}
+

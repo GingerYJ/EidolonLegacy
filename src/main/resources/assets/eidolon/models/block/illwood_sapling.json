@@ -1,0 +1,6 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "eidolon:blocks/illwood_sapling"
+  }
+}

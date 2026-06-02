@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "eidolon:bone_pile"
+    }
+  },
+  "result": {
+    "item": "eidolon:bone_pile_stairs",
+    "count": 4
+  }
+}
+

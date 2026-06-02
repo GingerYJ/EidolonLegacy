@@ -1,0 +1,23 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_result",
+  "capacity": 3,
+  "power": 3,
+  "result": {
+    "item": "eidolon:crimson_essence"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:enchanted_ash"
+    },
+    {
+      "item": "eidolon:enchanted_ash"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    },
+    {
+      "item": "eidolon:soul_shard"
+    }
+  ]
+}

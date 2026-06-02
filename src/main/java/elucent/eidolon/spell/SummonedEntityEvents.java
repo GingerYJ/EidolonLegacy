@@ -1,0 +1,75 @@
+package elucent.eidolon.spell;
+
+import elucent.eidolon.Reference;
+import elucent.eidolon.item.SummoningStaffItem;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+public final class SummonedEntityEvents {
+    private SummonedEntityEvents() {
+    }
+
+    @SubscribeEvent
+    public static void onLivingUpdate(LivingUpdateEvent event) {
+        EntityLivingBase entity = event.getEntityLiving();
+        if (!isSummoned(entity)) {
+            return;
+        }
+        if (entity instanceof EntityLiving) {
+            EntityLiving living = (EntityLiving) entity;
+            if (isOwner(living.getAttackTarget(), entity)) {
+                living.setAttackTarget(null);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onSetAttackTarget(LivingSetAttackTargetEvent event) {
+        EntityLivingBase entity = event.getEntityLiving();
+        if (isSummoned(entity) && isOwner(event.getTarget(), entity) && entity instanceof EntityLiving) {
+            ((EntityLiving) entity).setAttackTarget(null);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if (event.getEntityLiving() instanceof EntityPlayer
+                && event.getSource().getTrueSource() instanceof EntityLivingBase
+                && isSummoned((EntityLivingBase) event.getSource().getTrueSource())
+                && isOwner(event.getEntityLiving(), (EntityLivingBase) event.getSource().getTrueSource())) {
+            event.setCanceled(true);
+            return;
+        }
+        if (event.getSource().getTrueSource() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
+            assignOwnerSummonsTarget((EntityPlayer) event.getSource().getTrueSource(), event.getEntityLiving());
+        }
+    }
+
+    private static boolean isSummoned(EntityLivingBase entity) {
+        return entity != null && entity.getEntityData().getBoolean(SummoningStaffItem.SUMMONED_TAG);
+    }
+
+    private static boolean isOwner(net.minecraft.entity.Entity candidate, EntityLivingBase summoned) {
+        return candidate instanceof EntityPlayer
+                && summoned.getEntityData().getString(SummoningStaffItem.OWNER_TAG)
+                .equals(candidate.getUniqueID().toString());
+    }
+
+    private static void assignOwnerSummonsTarget(EntityPlayer owner, EntityLivingBase target) {
+        AxisAlignedBB bounds = owner.getEntityBoundingBox().grow(24.0D, 12.0D, 24.0D);
+        for (EntityLiving summon : owner.world.getEntitiesWithinAABB(EntityLiving.class, bounds,
+                entity -> isSummoned(entity) && isOwner(owner, entity))) {
+            if (summon != target) {
+                summon.setAttackTarget(target);
+            }
+        }
+    }
+}

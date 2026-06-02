@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "age=0": { "model": "eidolon:avennian_sprig_0" },
+    "age=1": { "model": "eidolon:avennian_sprig_1" }
+  }
+}

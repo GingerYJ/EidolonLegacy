@@ -1,0 +1,23 @@
+{
+  "type": "eidolon:altar_ritual",
+  "behavior": "item_result",
+  "capacity": 3,
+  "power": 3,
+  "result": {
+    "item": "eidolon:wicked_weave"
+  },
+  "offerings": [
+    {
+      "item": "eidolon:tattered_cloth"
+    },
+    {
+      "item": "eidolon:tattered_cloth"
+    },
+    {
+      "item": "eidolon:death_essence"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ]
+}

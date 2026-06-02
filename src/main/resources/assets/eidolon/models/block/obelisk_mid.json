@@ -1,0 +1,25 @@
+﻿{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"tex0": "eidolon:blocks/obelisk_bottom",
+		"tex1": "eidolon:blocks/obelisk_side_mid",
+		"tex2": "eidolon:blocks/obelisk_top_mid",
+		"particle": "eidolon:blocks/obelisk_side_mid"
+	},
+	"elements": [
+		{
+			"from": [2, 0, 2],
+			"to": [14, 16, 14],
+			"faces": {
+				"north": {"uv": [0, 0, 12, 16], "texture": "#tex1"},
+				"east": {"uv": [0, 0, 12, 16], "texture": "#tex1"},
+				"south": {"uv": [0, 0, 12, 16], "texture": "#tex1"},
+				"west": {"uv": [0, 0, 12, 16], "texture": "#tex1"},
+				"up": {"uv": [0, 0, 12, 12], "texture": "#tex2"},
+				"down": {"uv": [0, 0, 12, 12], "texture": "#tex0"}
+			}
+		}
+	]
+}
+

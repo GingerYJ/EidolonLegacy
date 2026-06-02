@@ -1,0 +1,19 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "contents": "eidolon:blocks/crucible_full",
+    "particle": "eidolon:blocks/crucible_full"
+  },
+  "elements": [
+    {
+      "from": [3, 13.6, 3],
+      "to": [13, 13.7, 13],
+      "faces": {
+        "up": {
+          "uv": [0, 0, 16, 16],
+          "texture": "#contents"
+        }
+      }
+    }
+  ]
+}

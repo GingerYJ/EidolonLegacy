@@ -1,0 +1,36 @@
+﻿{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"tex0": "eidolon:blocks/cistern_bottom",
+		"tex1": "eidolon:blocks/cistern_ends",
+		"tex4": "eidolon:blocks/cistern_top",
+		"particle": "eidolon:blocks/cistern_bottom"
+	},
+	"elements": [
+		{
+			"from": [4, 0, 4],
+			"to": [12, 2, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 8, 12]},
+			"faces": {
+				"north": {"uv": [0, 10, 8, 12], "texture": "#tex1"},
+				"east": {"uv": [0, 10, 8, 12], "texture": "#tex1"},
+				"south": {"uv": [0, 10, 8, 12], "texture": "#tex1"},
+				"west": {"uv": [0, 10, 8, 12], "texture": "#tex1"},
+				"down": {"uv": [0, 0, 8, 8], "texture": "#tex1"}
+			}
+		},
+		{
+			"from": [1, 2, 1],
+			"to": [15, 16, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 10, 9]},
+			"faces": {
+				"north": {"uv": [0, 0, 14, 14], "texture": "#tex0"},
+				"east": {"uv": [0, 0, 14, 14], "texture": "#tex0"},
+				"south": {"uv": [0, 0, 14, 14], "texture": "#tex0"},
+				"west": {"uv": [0, 0, 14, 14], "texture": "#tex0"},
+				"down": {"uv": [0, 0, 14, 14], "texture": "#tex4"}
+			}
+		}
+	]
+}
