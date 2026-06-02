@@ -1,4 +1,4 @@
-# EidolonLegacy / Eidolon 1.12.2 Port
+# EidolonLegacy
 
 中文 | [English](#english)
 
