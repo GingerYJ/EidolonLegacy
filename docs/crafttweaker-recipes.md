@@ -1,550 +1,1044 @@
-# CraftTweaker 配方接入
+# EidolonLegacy CraftTweaker 配方文档
 
-EidolonLegacy 目前把 Worktable、Crucible、Altar Ritual、Altar Offering、Athame Harvest、Research 几类配方或规则开放给 CraftTweaker 2。
+本文说明 EidolonLegacy 当前开放给 CraftTweaker 2 的接口。示例尽量写成“每一行都有注释”的形式，方便直接复制后修改。
 
-配方 id 使用普通资源路径。建议写完整命名空间，例如 `eidolon:athame` 或 `pack:test_worktable`。如果要替换内置配方，可以先 `removeById`，再用相同 id 添加新配方。
+脚本通常放在实例的 `scripts` 目录，例如：
 
-说明里的示例尽量按“每一行都写注释”的方式写。真实脚本中可以删掉注释，只保留调用本身。
+```text
+.minecraft/scripts/eidolon_legacy.zs
+```
+
+如果脚本放在子目录中也可以，例如：
+
+```text
+.minecraft/scripts/DLC/EL/my_recipes.zs
+```
+
+建议所有自定义 id 都使用自己的命名空间，例如：
+
+```text
+pack:test_recipe
+ctrecipes:cosmic_meatballs_crucible
+```
+
+## 通用规则
+
+- `id` 是配方或规则的唯一标识。建议写成 `"命名空间:名称"`。
+- `IItemStack` 写法通常是 `<modid:item>`，例如 `<minecraft:diamond>`。
+- 带数量的物品写法是 `<minecraft:paper> * 2`。
+- 带 metadata 的物品写法是 `<minecraft:dye:4>`。
+- 空槽一般使用 `null`。
+- 删除内置内容时，优先使用 `removeById`，不要轻易使用 `removeAll`。
+- 新增或删除配方后，HEI 和 Codex 会读取运行时配方列表，通常会同步显示。
 
 ## Worktable
 
-### 参数速查
+Worktable 是特殊工作台配方。它包含一个 3x3 主输入区和 4 个试剂槽。
 
-`Worktable.addRecipe(id, output, grid, reagents)`
-
-- `id`：配方 id，字符串，建议带命名空间，例如 `"pack:test_worktable"`。
-- `output`：产物，`IItemStack`，例如 `<eidolon:soul_shard>`。
-- `grid`：3x3 主输入，共 9 个 `IIngredient` 或 `null`。
-- `reagents`：Worktable 四个试剂槽，共 4 个 `IIngredient` 或 `null`。
+### 导入
 
 ```zenscript
-// 导入 Eidolon Worktable 的 CT 接口；没有这一行就不能写 Worktable.addRecipe。
+// 导入 EidolonLegacy 的 Worktable CT 接口。
+// 没有这一行，就不能调用 Worktable.addRecipe、Worktable.removeById 等方法。
 import mods.eidolon.Worktable;
+```
 
-// 添加一条 Worktable 配方；括号内参数顺序固定为：id、产物、3x3 主输入、4 个试剂槽。
+### 添加配方
+
+方法：
+
+```zenscript
+Worktable.addRecipe(id, output, grid, reagents);
+```
+
+参数：
+
+- `id`：字符串，配方 id。
+- `output`：`IItemStack`，输出物品。
+- `grid`：`IIngredient[]`，3x3 主输入，必须正好 9 个元素。
+- `reagents`：`IIngredient[]`，4 个试剂槽，必须正好 4 个元素。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条 Worktable 配方。
 Worktable.addRecipe(
-    // 第 1 个参数：配方 id；pack 是自定义命名空间，test_worktable 是配方名。
+    // 第 1 个参数：配方 id。
+    // pack 是你自己的命名空间，test_worktable 是这条配方的名字。
     "pack:test_worktable",
-    // 第 2 个参数：配方输出；这里表示合成结果是 1 个灵魂碎片。
-    <eidolon:soul_shard>,
-    // 第 3 个参数：3x3 主输入数组；必须刚好写 9 个位置。
+
+    // 第 2 个参数：输出物品。
+    // 这里表示合成结果是 1 个测试符印。
+    <eidolon:test_sigil>,
+
+    // 第 3 个参数：3x3 主输入。
+    // 必须正好写 9 个元素，顺序是从左到右、从上到下。
     [
-        // 第 1 行第 1 格；对应 GUI 左上角格子。
+        // 第 1 行第 1 格：左上角。
         <minecraft:stick>,
-        // 第 1 行第 2 格；对应 GUI 上排中间格子。
+        // 第 1 行第 2 格：上方中间。
         <minecraft:stick>,
-        // 第 1 行第 3 格；对应 GUI 右上角格子。
+        // 第 1 行第 3 格：右上角。
         <minecraft:stick>,
-        // 第 2 行第 1 格；对应 GUI 中排左侧格子。
+
+        // 第 2 行第 1 格：左侧中间。
         <minecraft:stick>,
-        // 第 2 行第 2 格；对应 GUI 正中格子。
+        // 第 2 行第 2 格：正中心。
         <minecraft:diamond>,
-        // 第 2 行第 3 格；对应 GUI 中排右侧格子。
+        // 第 2 行第 3 格：右侧中间。
         <minecraft:stick>,
-        // 第 3 行第 1 格；对应 GUI 左下角格子。
+
+        // 第 3 行第 1 格：左下角。
         <minecraft:stick>,
-        // 第 3 行第 2 格；对应 GUI 下排中间格子。
+        // 第 3 行第 2 格：下方中间。
         <minecraft:stick>,
-        // 第 3 行第 3 格；对应 GUI 右下角格子。
+        // 第 3 行第 3 格：右下角。
         <minecraft:stick>
     ],
-    // 第 4 个参数：四个试剂槽数组；必须刚好写 4 个位置。
+
+    // 第 4 个参数：4 个试剂槽。
+    // 必须正好写 4 个元素，null 表示该试剂槽为空。
     [
-        // 试剂槽 1；这里需要 1 个白镴镶嵌。
+        // 试剂槽 1：需要白镴嵌片。
         <eidolon:pewter_inlay>,
-        // 试剂槽 2；null 表示这个槽位不需要物品。
+        // 试剂槽 2：不需要物品。
         null,
-        // 试剂槽 3；null 表示这个槽位不需要物品。
+        // 试剂槽 3：不需要物品。
         null,
-        // 试剂槽 4；null 表示这个槽位不需要物品。
+        // 试剂槽 4：不需要物品。
         null
     ]
 );
+```
 
-// 按配方 id 删除；这里会删除内置的 eidolon:athame 配方。
+### 删除配方
+
+```zenscript
+// 按配方 id 删除。
+// 这里会删除内置的仪式匕首工作台配方。
 Worktable.removeById("eidolon:athame");
-// 按产物删除；所有输出匹配收割者镰刀的 Worktable 配方都会被删除。
+
+// 按输出物品删除。
+// 所有输出匹配收割者镰刀的 Worktable 配方都会被删除。
 Worktable.removeByOutput(<eidolon:reaper_scythe>);
-// 删除全部 Worktable 配方；通常只在整包完全重写配方时使用。
+
+// 删除全部 Worktable 配方。
+// 只有在整包完全重写 Worktable 系统时才建议使用。
 // Worktable.removeAll();
 ```
 
 ## Crucible
 
-### 参数速查
+Crucible 是坩埚配方。它由多个步骤组成，每一步可以投入多个物品，并可要求搅拌指定次数。
 
-`Crucible.addRecipe(id, output, stirs, steps, stirrer, fluid)`
-
-- `id`：配方 id，字符串。
-- `output`：坩埚产物，`IItemStack`。
-- `stirs`：每一步需要搅拌的次数，`int[]`，数量必须和 `steps` 一致。
-- `steps`：每一步投入的物品，`IIngredient[][]`。
-- `stirrer`：搅拌物，可省略；省略时默认为木棍。
-- `fluid`：起始流体，可省略；省略时默认为一桶水。
+### 导入
 
 ```zenscript
-// 导入 Eidolon Crucible 的 CT 接口；没有这一行就不能写 Crucible.addRecipe。
+// 导入 EidolonLegacy 的 Crucible CT 接口。
+// 没有这一行，就不能调用 Crucible.addRecipe、Crucible.removeById 等方法。
 import mods.eidolon.Crucible;
+```
 
-// 添加一条 Crucible 配方；参数顺序固定为：id、产物、每步搅拌次数、每步投入物、搅拌物、流体。
+### 添加配方
+
+方法：
+
+```zenscript
+Crucible.addRecipe(id, output, stirs, steps, stirrer, fluid);
+```
+
+参数：
+
+- `id`：字符串，配方 id。
+- `output`：`IItemStack`，最终产物。
+- `stirs`：`int[]`，每一步需要搅拌的次数。
+- `steps`：`IIngredient[][]`，每一步投入物。
+- `stirrer`：`IIngredient`，搅拌物，可省略；默认是木棍。
+- `fluid`：`ILiquidStack`，起始流体，可省略；默认是 1000 mB 水。
+
+限制：
+
+- `stirs` 的数量必须和 `steps` 的步骤数量一致。
+- 每一步最多 6 个投入物。
+- 同一步内投入物不区分顺序。
+- 步骤之间必须按顺序完成。
+- HEI 和 Codex 每页显示 5 步，长配方可用按钮或滚轮翻看。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条 Crucible 配方。
 Crucible.addRecipe(
-    // 第 1 个参数：配方 id；用于删除、替换和日志定位。
+    // 第 1 个参数：配方 id。
+    // 用于日志定位、删除和替换。
     "pack:test_crucible",
-    // 第 2 个参数：配方输出；这里表示完成后产出死亡精华。
+
+    // 第 2 个参数：坩埚最终产物。
+    // 这里表示完成全部步骤后产出 1 个死亡精华。
     <eidolon:death_essence>,
-    // 第 3 个参数：每一步需要搅拌几次；数组长度必须等于 steps 的步数。
+
+    // 第 3 个参数：每一步需要搅拌的次数。
+    // 数组长度必须等于下面 steps 的步骤数。
     [
-        // 第 1 步需要搅拌 0 次；投入后可直接确认该步。
+        // 第 1 步：不需要搅拌，投入后空手右键确认即可。
         0,
-        // 第 2 步需要搅拌 2 次；玩家需要用搅拌物右键两次。
+        // 第 2 步：需要用搅拌物右键坩埚 2 次。
         2,
-        // 第 3 步需要搅拌 0 次；投入后可直接确认该步。
-        0
+        // 第 3 步：需要用搅拌物右键坩埚 1 次。
+        1
     ],
-    // 第 4 个参数：每一步需要投入的物品；外层数组表示步骤，内层数组表示该步骤的投入物。
+
+    // 第 4 个参数：每一步投入物。
+    // 外层数组表示步骤，内层数组表示该步骤要投入的物品。
     [
-        // 第 1 步投入物列表；同一步内可以有多个物品。
+        // 第 1 步投入物。
+        // 这一轮需要腐肉和附魔灰烬。
         [
-            // 第 1 步第 1 个投入物；这里需要腐肉。
+            // 第 1 步第 1 个投入物：腐肉。
             <minecraft:rotten_flesh>,
-            // 第 1 步第 2 个投入物；这里需要附魔灰烬。
+            // 第 1 步第 2 个投入物：附魔灰烬。
             <eidolon:enchanted_ash>
         ],
-        // 第 2 步投入物列表；这里该步骤只需要一个物品。
+
+        // 第 2 步投入物。
+        // 这一轮需要 3 个物品，投入顺序不重要。
         [
-            // 第 2 步第 1 个投入物；这里需要灵魂碎片。
-            <eidolon:soul_shard>
+            // 第 2 步第 1 个投入物：灵魂碎片。
+            <eidolon:soul_shard>,
+            // 第 2 步第 2 个投入物：骨头。
+            <minecraft:bone>,
+            // 第 2 步第 3 个投入物：红石粉。
+            <minecraft:redstone>
         ],
-        // 第 3 步投入物列表；这里该步骤只需要一个物品。
+
+        // 第 3 步投入物。
+        // 这一轮只需要木炭。
         [
-            // 第 3 步第 1 个投入物；minecraft:coal:1 表示木炭。
+            // minecraft:coal:1 表示木炭。
             <minecraft:coal:1>
         ]
     ],
-    // 第 5 个参数：搅拌物；玩家必须拿这个物品右键坩埚完成搅拌次数。
+
+    // 第 5 个参数：搅拌物。
+    // 需要搅拌的步骤必须手持该物品右键坩埚。
     <minecraft:stick>,
-    // 第 6 个参数：起始流体；这里表示需要 1000 mB 水，也就是一桶水。
+
+    // 第 6 个参数：起始流体。
+    // 这里表示需要 1000 mB 水，也就是一桶水。
     <liquid:water> * 1000
 );
+```
 
-// 按配方 id 删除；这里会删除 eidolon:ender_calx 坩埚配方。
+### 长配方示例
+
+```zenscript
+// 这条配方有 6 个步骤，每一步正好 6 个投入物。
+// 可用于测试 HEI/Codex 的坩埚步骤翻页显示。
+Crucible.addRecipe(
+    // 配方 id。
+    "pack:long_crucible_test",
+
+    // 输出物品。
+    <minecraft:diamond_block>,
+
+    // 每一步的搅拌次数，共 6 项。
+    [
+        // 第 1 步：0 次。
+        0,
+        // 第 2 步：1 次。
+        1,
+        // 第 3 步：2 次。
+        2,
+        // 第 4 步：3 次。
+        3,
+        // 第 5 步：0 次。
+        0,
+        // 第 6 步：1 次。
+        1
+    ],
+
+    // 6 个步骤的投入物。
+    [
+        // 第 1 步，6 个投入物。
+        [
+            <minecraft:apple>,
+            <minecraft:bread>,
+            <minecraft:carrot>,
+            <minecraft:potato>,
+            <minecraft:wheat>,
+            <minecraft:sugar>
+        ],
+
+        // 第 2 步，6 个投入物。
+        [
+            <minecraft:coal>,
+            <minecraft:redstone>,
+            <minecraft:dye:4>,
+            <minecraft:quartz>,
+            <minecraft:glowstone_dust>,
+            <minecraft:gunpowder>
+        ],
+
+        // 第 3 步，6 个投入物。
+        [
+            <minecraft:iron_ingot>,
+            <minecraft:gold_ingot>,
+            <minecraft:diamond>,
+            <minecraft:emerald>,
+            <minecraft:ender_pearl>,
+            <minecraft:blaze_rod>
+        ],
+
+        // 第 4 步，6 个投入物。
+        [
+            <minecraft:bone>,
+            <minecraft:string>,
+            <minecraft:feather>,
+            <minecraft:leather>,
+            <minecraft:slime_ball>,
+            <minecraft:magma_cream>
+        ],
+
+        // 第 5 步，6 个投入物。
+        [
+            <minecraft:cobblestone>,
+            <minecraft:stone>,
+            <minecraft:sand>,
+            <minecraft:gravel>,
+            <minecraft:clay_ball>,
+            <minecraft:brick>
+        ],
+
+        // 第 6 步，6 个投入物。
+        [
+            <minecraft:paper>,
+            <minecraft:book>,
+            <minecraft:compass>,
+            <minecraft:clock>,
+            <minecraft:name_tag>,
+            <minecraft:bowl>
+        ]
+    ],
+
+    // 搅拌物：木棍。
+    <minecraft:stick>,
+
+    // 起始流体：一桶水。
+    <liquid:water> * 1000
+);
+```
+
+### 删除配方
+
+```zenscript
+// 按配方 id 删除。
+// 这里会删除内置的 ender_calx 坩埚配方。
 Crucible.removeById("eidolon:ender_calx");
-// 按产物删除；所有输出匹配暗影宝石的坩埚配方都会被删除。
+
+// 按输出物品删除。
+// 所有输出匹配暗影宝石的坩埚配方都会被删除。
 Crucible.removeByOutput(<eidolon:shadow_gem>);
-// 删除全部坩埚配方；通常只在整包完全重写坩埚体系时使用。
+
+// 删除全部坩埚配方。
+// 只有在整包完全重写坩埚系统时才建议使用。
 // Crucible.removeAll();
 ```
 
 ## Altar Ritual
 
-祭坛仪式会读取火盆、Stone Hand、Necrotic Focus、祭坛周围供物和玩家生命等条件。不同仪式类型使用不同方法，但基础参数含义相同。
+祭坛仪式会读取祭坛容量、力量、火盆祭品、Stone Hand 物品、Necrotic Focus 物品和玩家生命等条件。
+
+### 导入
+
+```zenscript
+// 导入 EidolonLegacy 的 Altar CT 接口。
+// 祭坛仪式和祭坛供物都使用这个类。
+import mods.eidolon.Altar;
+```
 
 ### 普通产物仪式
 
-`Altar.addItemResult(id, output, capacity, power, offerings, sacrifice)`
-
-- `id`：仪式 id。
-- `output`：仪式最终产物。
-- `capacity`：需要的祭坛容量。
-- `power`：需要的祭坛力量。
-- `offerings`：Stone Hand 上需要消耗的物品列表；如果不单独写 `sacrifice`，第一个物品也会作为火盆祭品。
-- `sacrifice`：火盆上的祭品，可省略。
+方法：
 
 ```zenscript
-// 导入 Eidolon Altar 的 CT 接口；祭坛仪式和祭坛供物都使用这个类。
-import mods.eidolon.Altar;
+Altar.addItemResult(id, output, capacity, power, offerings, sacrifice);
+```
 
-// 添加普通产物仪式；这种仪式完成后直接生成 output。
+参数：
+
+- `id`：字符串，仪式 id。
+- `output`：`IItemStack`，仪式完成后生成的物品。
+- `capacity`：`double`，容量需求。
+- `power`：`double`，力量需求。
+- `offerings`：`IIngredient[]`，Stone Hand 上依次消耗的物品。
+- `sacrifice`：`IIngredient`，火盆祭品，可省略；省略时使用 `offerings` 的第一个物品。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条普通产物仪式。
 Altar.addItemResult(
-    // 第 1 个参数：仪式 id；用于删除、替换和日志定位。
+    // 第 1 个参数：仪式 id。
     "pack:test_altar_result",
-    // 第 2 个参数：仪式产物；这里完成后生成死亡精华。
+
+    // 第 2 个参数：仪式产物。
+    // 仪式完成后会生成死亡精华。
     <eidolon:death_essence>,
-    // 第 3 个参数：容量需求；祭坛周围供物提供的容量总值必须至少为 3.0。
+
+    // 第 3 个参数：容量需求。
+    // 祭坛读取到的容量必须至少为 3.0。
     3.0,
-    // 第 4 个参数：力量需求；祭坛周围供物提供的力量总值必须至少为 3.0。
+
+    // 第 4 个参数：力量需求。
+    // 祭坛读取到的力量必须至少为 3.0。
     3.0,
-    // 第 5 个参数：仪式物品列表；通常由 Stone Hand 提供并在仪式过程中消耗。
+
+    // 第 5 个参数：Stone Hand 物品列表。
+    // 仪式过程中会按顺序消耗这些物品。
     [
-        // 第 1 个仪式物品；未指定 sacrifice 时，它也会作为火盆祭品。
+        // 第 1 个 Stone Hand 物品：灵魂碎片。
         <eidolon:soul_shard>,
-        // 第 2 个仪式物品；由 Stone Hand 提供并被消耗。
+        // 第 2 个 Stone Hand 物品：骨头。
         <minecraft:bone>
-    ]
-    // 第 6 个参数 sacrifice 省略；因此 offerings 的第一个物品会同时作为火盆祭品。
+    ],
+
+    // 第 6 个参数：火盆祭品。
+    // 玩家需要把腐肉放在火盆上，并用打火石点燃。
+    <minecraft:rotten_flesh>
 );
 ```
 
 ### 转化仪式
 
-`Altar.addTransform(id, output, focus, capacity, power, offerings, health, sacrifice)`
-
-- `output`：最终转化后的物品。
-- `focus`：Necrotic Focus 中需要放入的被转化物。
-- `health`：玩家生命消耗，可省略；单位使用生命值，`20.0` 等于 10 颗心。
+方法：
 
 ```zenscript
-// 添加转化仪式；这种仪式会在结束时把 focus 转化为 output。
+Altar.addTransform(id, output, focus, capacity, power, offerings, health, sacrifice);
+```
+
+参数：
+
+- `id`：字符串，仪式 id。
+- `output`：`IItemStack`，转化后的物品。
+- `focus`：`IIngredient`，Necrotic Focus 中的被转化物。
+- `capacity`：`double`，容量需求。
+- `power`：`double`，力量需求。
+- `offerings`：`IIngredient[]`，Stone Hand 上依次消耗的物品。
+- `health`：`double`，玩家生命消耗，可省略；`20.0` 等于 10 颗心。
+- `sacrifice`：`IIngredient`，火盆祭品，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条转化仪式。
 Altar.addTransform(
-    // 第 1 个参数：仪式 id；用于删除、替换和日志定位。
+    // 第 1 个参数：仪式 id。
     "pack:test_altar_transform",
-    // 第 2 个参数：转化结果；仪式完成后得到吸血剑。
+
+    // 第 2 个参数：转化结果。
+    // 仪式结束后，焦点物品会变成汲取之剑。
     <eidolon:sapping_sword>,
-    // 第 3 个参数：转化目标；玩家需要把铁剑放入 Necrotic Focus。
+
+    // 第 3 个参数：焦点物品。
+    // 玩家需要把铁剑放入 Necrotic Focus。
     <minecraft:iron_sword>,
-    // 第 4 个参数：容量需求；祭坛扫描到的容量必须至少为 4.0。
+
+    // 第 4 个参数：容量需求。
     4.0,
-    // 第 5 个参数：力量需求；祭坛扫描到的力量必须至少为 4.0。
+
+    // 第 5 个参数：力量需求。
     4.0,
-    // 第 6 个参数：仪式物品列表；通常由 Stone Hand 提供并依次消耗。
+
+    // 第 6 个参数：Stone Hand 物品列表。
     [
-        // 第 1 个仪式物品；这里需要暗影宝石。
+        // 第 1 个消耗物：暗影宝石。
         <eidolon:shadow_gem>,
-        // 第 2 个仪式物品；这里需要灵魂碎片。
+        // 第 2 个消耗物：灵魂碎片。
         <eidolon:soul_shard>
     ],
-    // 第 7 个参数：生命消耗；这里消耗 20 点生命，也就是 10 颗心。
-    20.0
-    // 第 8 个参数 sacrifice 省略；因此 offerings 的第一个物品会同时作为火盆祭品。
+
+    // 第 7 个参数：玩家生命消耗。
+    // 20.0 表示 10 颗心。
+    20.0,
+
+    // 第 8 个参数：火盆祭品。
+    <minecraft:redstone>
 );
 ```
 
 ### 充能仪式
 
-`Altar.addCharge(id, output, focus, capacity, power, offerings, sacrifice)`
-
-- `output`：充能完成后的物品。
-- `focus`：Necrotic Focus 中需要放入的待充能物品。
+方法：
 
 ```zenscript
-// 添加充能仪式；这种仪式会把 focus 中的物品变为 output。
+Altar.addCharge(id, output, focus, capacity, power, offerings, sacrifice);
+```
+
+参数：
+
+- `id`：字符串，仪式 id。
+- `output`：`IItemStack`，HEI/Codex 显示的充能后物品。
+- `focus`：`IIngredient`，Necrotic Focus 中需要充能的物品。
+- `capacity`：`double`，容量需求。
+- `power`：`double`，力量需求。
+- `offerings`：`IIngredient[]`，Stone Hand 上依次消耗的物品。
+- `sacrifice`：`IIngredient`，火盆祭品，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条充能仪式。
 Altar.addCharge(
-    // 第 1 个参数：仪式 id；用于删除、替换和日志定位。
+    // 第 1 个参数：仪式 id。
     "pack:test_altar_charge",
-    // 第 2 个参数：充能结果；这里显示/产出充能后的魂火魔杖。
+
+    // 第 2 个参数：显示产物。
+    // HEI 和 Codex 会显示充能后的魂火魔杖。
     <eidolon:soulfire_wand>,
-    // 第 3 个参数：待充能物；玩家需要把魂火魔杖放入 Necrotic Focus。
+
+    // 第 3 个参数：待充能物品。
+    // 玩家需要把魂火魔杖放入 Necrotic Focus。
     <eidolon:soulfire_wand>,
-    // 第 4 个参数：容量需求；祭坛扫描到的容量必须至少为 3.0。
+
+    // 第 4 个参数：容量需求。
     3.0,
-    // 第 5 个参数：力量需求；祭坛扫描到的力量必须至少为 3.0。
+
+    // 第 5 个参数：力量需求。
     3.0,
-    // 第 6 个参数：仪式物品列表；通常由 Stone Hand 提供并依次消耗。
+
+    // 第 6 个参数：Stone Hand 物品列表。
     [
-        // 第 1 个仪式物品；这里需要次级灵魂宝石。
+        // 第 1 个消耗物：次级灵魂宝石。
         <eidolon:lesser_soul_gem>,
-        // 第 2 个仪式物品；这里需要烈焰粉。
+        // 第 2 个消耗物：烈焰粉。
         <minecraft:blaze_powder>
-    ]
-    // 第 7 个参数 sacrifice 省略；因此 offerings 的第一个物品会同时作为火盆祭品。
+    ],
+
+    // 第 7 个参数：火盆祭品。
+    <minecraft:glowstone_dust>
 );
 ```
 
 ### 召唤仪式
 
-`Altar.addSummon(id, displayOutput, entityId, focus, capacity, power, offerings, sacrifice)`
-
-- `displayOutput`：只用于 HEI / Codex 显示，通常写对应实体的刷怪蛋。
-- `entityId`：实际召唤的实体 id。
-- `focus`：Necrotic Focus 中需要放入的物品。
+方法：
 
 ```zenscript
-// 添加召唤仪式；这种仪式会在完成后生成 entityId 对应实体。
+Altar.addSummon(id, displayOutput, entityId, focus, capacity, power, offerings, sacrifice);
+```
+
+参数：
+
+- `id`：字符串，仪式 id。
+- `displayOutput`：`IItemStack`，HEI/Codex 中显示的输出，通常写刷怪蛋。
+- `entityId`：字符串，实际召唤的实体 id。
+- `focus`：`IIngredient`，Necrotic Focus 中的焦点物品。
+- `capacity`：`double`，容量需求。
+- `power`：`double`，力量需求。
+- `offerings`：`IIngredient[]`，Stone Hand 上依次消耗的物品。
+- `sacrifice`：`IIngredient`，火盆祭品，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条召唤仪式。
 Altar.addSummon(
-    // 第 1 个参数：仪式 id；用于删除、替换和日志定位。
+    // 第 1 个参数：仪式 id。
     "pack:test_altar_summon",
-    // 第 2 个参数：显示产物；只给 HEI 和 Codex 用，不决定实际召唤内容。
+
+    // 第 2 个参数：显示产物。
+    // 这里只用于 HEI/Codex 展示，不决定实际召唤内容。
     <minecraft:spawn_egg>.withTag({EntityTag: {id: "minecraft:zombie"}}),
-    // 第 3 个参数：实际召唤实体 id；这里表示召唤僵尸。
+
+    // 第 3 个参数：实际召唤的实体 id。
     "minecraft:zombie",
-    // 第 4 个参数：焦点物品；玩家需要把木炭放入 Necrotic Focus。
+
+    // 第 4 个参数：Necrotic Focus 中的焦点物品。
+    // 这里要求放入木炭。
     <minecraft:coal:1>,
-    // 第 5 个参数：容量需求；祭坛扫描到的容量必须至少为 3.0。
+
+    // 第 5 个参数：容量需求。
     3.0,
-    // 第 6 个参数：力量需求；祭坛扫描到的力量必须至少为 3.0。
+
+    // 第 6 个参数：力量需求。
     3.0,
-    // 第 7 个参数：仪式物品列表；通常由 Stone Hand 提供并依次消耗。
+
+    // 第 7 个参数：Stone Hand 物品列表。
     [
-        // 第 1 个仪式物品；这里需要灵魂碎片。
+        // 第 1 个消耗物：灵魂碎片。
         <eidolon:soul_shard>,
-        // 第 2 个仪式物品；这里需要腐肉。
+        // 第 2 个消耗物：腐肉。
         <minecraft:rotten_flesh>
-    ]
-    // 第 8 个参数 sacrifice 省略；因此 offerings 的第一个物品会同时作为火盆祭品。
+    ],
+
+    // 第 8 个参数：火盆祭品。
+    <minecraft:bone>
 );
 ```
 
 ### 吸收仪式
 
-`Altar.addAbsorption(id, output, focus, capacity, power, offerings, sacrifice)`
-
-- `output`：吸收完成后的物品。
-- `focus`：Necrotic Focus 中需要放入的物品。
+方法：
 
 ```zenscript
-// 添加吸收仪式；这种仪式会让焦点物品吸收目标实体或吸收值。
-Altar.addAbsorption(
-    // 第 1 个参数：仪式 id；用于删除、替换和日志定位。
-    "pack:test_altar_absorption",
-    // 第 2 个参数：仪式结果；这里仍然显示召唤法杖。
-    <eidolon:summoning_staff>,
-    // 第 3 个参数：焦点物品；玩家需要把召唤法杖放入 Necrotic Focus。
-    <eidolon:summoning_staff>,
-    // 第 4 个参数：容量需求；祭坛扫描到的容量必须至少为 4.0。
-    4.0,
-    // 第 5 个参数：力量需求；祭坛扫描到的力量必须至少为 4.0。
-    4.0,
-    // 第 6 个参数：仪式物品列表；通常由 Stone Hand 提供并依次消耗。
-    [
-        // 第 1 个仪式物品；这里需要死亡精华。
-        <eidolon:death_essence>,
-        // 第 2 个仪式物品；这里需要灵魂碎片。
-        <eidolon:soul_shard>
-    ]
-    // 第 7 个参数 sacrifice 省略；因此 offerings 的第一个物品会同时作为火盆祭品。
-);
+Altar.addAbsorption(id, output, focus, capacity, power, offerings, sacrifice);
+```
 
-// 按仪式 id 删除；这里会删除 eidolon:lesser_soul_gem 仪式。
+参数：
+
+- `id`：字符串，仪式 id。
+- `output`：`IItemStack`，HEI/Codex 中显示的输出。
+- `focus`：`IIngredient`，Necrotic Focus 中的吸收载体。
+- `capacity`：`double`，容量需求。
+- `power`：`double`，力量需求。
+- `offerings`：`IIngredient[]`，Stone Hand 上依次消耗的物品。
+- `sacrifice`：`IIngredient`，火盆祭品，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条吸收仪式。
+Altar.addAbsorption(
+    // 第 1 个参数：仪式 id。
+    "pack:test_altar_absorption",
+
+    // 第 2 个参数：显示产物。
+    // 这里显示召唤法杖。
+    <eidolon:summoning_staff>,
+
+    // 第 3 个参数：吸收载体。
+    // 玩家需要把召唤法杖放入 Necrotic Focus。
+    <eidolon:summoning_staff>,
+
+    // 第 4 个参数：容量需求。
+    4.0,
+
+    // 第 5 个参数：力量需求。
+    4.0,
+
+    // 第 6 个参数：Stone Hand 物品列表。
+    [
+        // 第 1 个消耗物：死亡精华。
+        <eidolon:death_essence>,
+        // 第 2 个消耗物：灵魂碎片。
+        <eidolon:soul_shard>
+    ],
+
+    // 第 7 个参数：火盆祭品。
+    <minecraft:bone>
+);
+```
+
+### 删除仪式
+
+```zenscript
+// 按仪式 id 删除。
 Altar.removeById("eidolon:lesser_soul_gem");
-// 按产物删除；所有输出匹配死亡精华的祭坛仪式都会被删除。
+
+// 按显示输出或实际输出删除。
 Altar.removeByOutput(<eidolon:death_essence>);
-// 删除全部祭坛仪式；通常只在整包完全重写仪式体系时使用。
+
+// 删除全部祭坛仪式。
+// 只有在整包完全重写仪式系统时才建议使用。
 // Altar.removeAll();
 ```
 
 ## Altar Offering
 
-Altar Offering 是祭坛周围供物提供容量和力量的规则，不是仪式配方本身。
+Altar Offering 是祭坛供物规则，用来给祭坛提供容量和力量。
 
-### 参数速查
-
-- `id`：供物规则 id，同时也是数值分组 key。
-- `item`：提供数值的物品。
-- `capacity`：该物品提供的容量。
-- `power`：该物品提供的力量。
-- `blockOffering`：是否在“方块放在祭坛上方”时生效。
-- `plateOffering`：是否在“物品放入祭品盘”时生效。
+### 导入
 
 ```zenscript
-// 导入 Eidolon Altar 的 CT 接口；祭坛仪式和祭坛供物都使用这个类。
+// 导入 EidolonLegacy 的 Altar CT 接口。
+// 供物规则也写在 Altar 类里。
 import mods.eidolon.Altar;
+```
 
-// 添加默认模式供物；ItemBlock 默认作为方块供物，普通物品默认作为祭品盘供物。
+### 添加默认供物
+
+方法：
+
+```zenscript
+Altar.addOffering(id, item, capacity, power);
+```
+
+参数：
+
+- `id`：字符串，供物规则 id，同时也是数值分组 key。
+- `item`：`IItemStack`，供物物品。
+- `capacity`：`double`，提供的容量。
+- `power`：`double`，提供的力量。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条默认供物规则。
 Altar.addOffering(
-    // 第 1 个参数：供物规则 id；相同 id/key 不会重复叠加，只取最大值。
+    // 第 1 个参数：供物规则 id。
+    // 相同 id/key 的供物不会重复叠加。
     "pack:test_offering",
-    // 第 2 个参数：供物物品；这里表示钻石。
+
+    // 第 2 个参数：供物物品。
+    // 这里表示钻石。
     <minecraft:diamond>,
-    // 第 3 个参数：容量数值；这里提供 2.0 容量。
+
+    // 第 3 个参数：提供的容量。
     2.0,
-    // 第 4 个参数：力量数值；这里提供 1.0 力量。
+
+    // 第 4 个参数：提供的力量。
     1.0
 );
+```
 
-// 添加只在方块放到祭坛上方时生效的供物规则。
+### 仅方块供物
+
+```zenscript
+// 只在物品作为方块放置时生效。
 Altar.addBlockOffering(
-    // 第 1 个参数：供物规则 id；用于删除和分组。
+    // 供物规则 id。
     "pack:test_block_offering",
-    // 第 2 个参数：供物物品；物品本身必须能放置成方块。
+
+    // 供物物品。
+    // 这里是红石火把。
     <minecraft:redstone_torch>,
-    // 第 3 个参数：容量数值；这里提供 0.0 容量。
+
+    // 提供容量。
     0.0,
-    // 第 4 个参数：力量数值；这里提供 2.0 力量。
+
+    // 提供力量。
     2.0
 );
+```
 
-// 添加只在物品放入祭品盘时生效的供物规则。
+### 仅祭品盘供物
+
+```zenscript
+// 只在物品放进祭品盘时生效。
 Altar.addPlateOffering(
-    // 第 1 个参数：供物规则 id；用于删除和分组。
+    // 供物规则 id。
     "pack:test_plate_offering",
-    // 第 2 个参数：供物物品；这里表示绿宝石。
+
+    // 供物物品。
+    // 这里是绿宝石。
     <minecraft:emerald>,
-    // 第 3 个参数：容量数值；这里提供 1.0 容量。
+
+    // 提供容量。
     1.0,
-    // 第 4 个参数：力量数值；这里提供 2.0 力量。
+
+    // 提供力量。
     2.0
 );
+```
 
-// 添加手动模式供物；可以自己决定方块模式和祭品盘模式是否生效。
+### 手动指定供物模式
+
+方法：
+
+```zenscript
+Altar.addOfferingModes(id, item, capacity, power, blockOffering, plateOffering);
+```
+
+参数：
+
+- `blockOffering`：布尔值，是否作为方块供物生效。
+- `plateOffering`：布尔值，是否作为祭品盘供物生效。
+
+逐行注释示例：
+
+```zenscript
+// 手动指定供物可以在哪些模式下生效。
 Altar.addOfferingModes(
-    // 第 1 个参数：供物规则 id；用于删除和分组。
+    // 第 1 个参数：供物规则 id。
     "pack:test_skull_offering",
-    // 第 2 个参数：供物物品；这里表示普通骷髅头。
+
+    // 第 2 个参数：供物物品。
     <minecraft:skull:0>,
-    // 第 3 个参数：容量数值；这里提供 2.0 容量。
+
+    // 第 3 个参数：提供容量。
     2.0,
-    // 第 4 个参数：力量数值；这里提供 0.0 力量。
+
+    // 第 4 个参数：提供力量。
     0.0,
-    // 第 5 个参数：blockOffering；true 表示放在祭坛上方时会被读取。
+
+    // 第 5 个参数：是否作为方块供物生效。
     true,
-    // 第 6 个参数：plateOffering；true 表示放进祭品盘时也会被读取。
+
+    // 第 6 个参数：是否作为祭品盘供物生效。
     true
 );
+```
 
-// 按供物规则 id 删除；这里会删除 eidolon:light 供物规则。
+规则说明：
+
+- 相同 `id` 也就是相同 key 的供物不会重复叠加，只取最高容量和力量。
+- 不同 key 的供物可以相加。
+- ItemBlock 可以放进祭品盘，但如果没有 plateOffering 规则，不会提供数值。
+
+删除供物：
+
+```zenscript
+// 按供物规则 id 删除。
 Altar.removeOfferingById("eidolon:light");
-// 按物品删除；所有以钻石为供物物品的规则都会被删除。
+
+// 按物品删除所有相关供物规则。
 Altar.removeOfferingByItem(<minecraft:diamond>);
-// 删除全部供物规则；通常只在整包完全重写祭坛数值体系时使用。
+
+// 删除全部供物规则。
 // Altar.removeAllOfferings();
 ```
 
-Altar Offering 的 id 同时也是数值分组 key。相同 key 的多个供物不会重复叠加，只取该 key 下最大的容量/力量；不同 key 会相加。内置 key 包括：
-
-- `eidolon:light`
-- `eidolon:skull`
-- `eidolon:goblet`
-- `eidolon:essence`
-
-当前 Altar Offering 按 `Item` 注册，不区分 metadata 或 NBT。
-
 ## Athame Harvest
 
-### 参数速查
+Athame Harvest 是仪式匕首采集规则。
 
-`Athame.addRecipe(id, source, output, sourceLabel)`
-
-- `id`：采集规则 id。
-- `source`：被仪式匕首右键采集的方块物品形态。
-- `output`：成功采集后掉落的产物。
-- `sourceLabel`：Codex 中显示的来源文字，可省略。
+### 导入
 
 ```zenscript
-// 导入 Eidolon Athame 的 CT 接口；没有这一行就不能写 Athame.addRecipe。
+// 导入 EidolonLegacy 的 Athame CT 接口。
 import mods.eidolon.Athame;
+```
 
-// 添加仪式匕首采集规则；玩家用仪式匕首右键 source 对应植物时有概率掉落 output。
+### 添加采集规则
+
+方法：
+
+```zenscript
+Athame.addRecipe(id, source, output, sourceLabel);
+```
+
+参数：
+
+- `id`：字符串，采集规则 id。
+- `source`：`IIngredient`，可被仪式匕首采集的来源。
+- `output`：`IItemStack`，成功采集后的产物。
+- `sourceLabel`：字符串，Codex 中显示的来源名称，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条仪式匕首采集规则。
 Athame.addRecipe(
-    // 第 1 个参数：采集规则 id；用于删除、替换和日志定位。
+    // 第 1 个参数：采集规则 id。
     "pack:test_athame_harvest",
-    // 第 2 个参数：可采集来源；这里表示红花 metadata 0，也就是玫瑰。
+
+    // 第 2 个参数：采集来源。
+    // 这里表示红花 metadata 0。
     <minecraft:red_flower:0>,
-    // 第 3 个参数：采集产物；这里表示成功时掉落灵魂碎片。
+
+    // 第 3 个参数：采集产物。
+    // 成功时掉落灵魂碎片。
     <eidolon:soul_shard>,
-    // 第 4 个参数：来源显示文字；会显示在 Codex 的获取方式说明中。
+
+    // 第 4 个参数：来源显示名。
+    // 会显示在 Codex 的来源说明中。
     "玫瑰"
 );
+```
 
-// 按采集规则 id 删除；这里会删除内置蕨类采集规则。
+删除：
+
+```zenscript
+// 按采集规则 id 删除。
 Athame.removeById("eidolon:avennian_sprig_from_fern");
-// 按产物删除；所有产物匹配 Oanna Bloom 的采集规则都会被删除。
+
+// 按产物删除。
 Athame.removeByOutput(<eidolon:oanna_bloom>);
-// 按来源删除；所有来源匹配睡莲的采集规则都会被删除。
+
+// 按来源删除。
 Athame.removeBySource(<minecraft:waterlily>);
-// 删除全部仪式匕首采集规则；通常只在整包完全重写草药获取时使用。
+
+// 删除全部仪式匕首采集规则。
 // Athame.removeAll();
 ```
 
-内置 Athame Harvest 配方 id：
-
-- `eidolon:avennian_sprig_from_fern`
-- `eidolon:merammer_root_from_oxeye_daisy`
-- `eidolon:oanna_bloom_from_lily_pad`
-- `eidolon:sildrian_seed_from_jungle_leaves`
-
-CraftTweaker 脚本修改后，HEI 和 Codex 应读取运行时配方列表，因此应能同步显示新增或删除后的配方。
-
 ## Research
 
-### 参数速查
+Research 是研究定义和研究笔记触发来源。
 
-`Research.addResearch(id, name, stars, prerequisites, stepItems, source, description)`
-
-- `id`：研究 id。
-- `name`：研究显示名，可直接写中文。
-- `stars`：研究星级，必须是 `1-5`。
-- `prerequisites`：前置研究 id 数组；没有前置就写 `[]`。
-- `stepItems`：每一级研究桌可选择提交的物品；外层数量必须等于 `stars`，内层每个物品会生成一条可选任务，提交其中任意一条就推进该级。
-- `source`：Codex 来源文字，可直接写中文。
-- `description`：Codex 研究描述，可直接写中文。
+### 导入
 
 ```zenscript
-// 导入 Eidolon Research 的 CT 接口；没有这一行就不能写 Research.addResearch。
+// 导入 EidolonLegacy 的 Research CT 接口。
 import mods.eidolon.Research;
+```
 
-// 添加或替换一条研究；如果 id 和内置研究相同，就会覆盖同 id 研究。
+### 添加研究
+
+方法：
+
+```zenscript
+Research.addResearch(id, name, stars, prerequisites, stepItems, source, description);
+```
+
+参数：
+
+- `id`：字符串，研究 id。
+- `name`：字符串，研究显示名称，可直接写中文。
+- `stars`：整数，研究星级，必须为 1-5。
+- `prerequisites`：`String[]`，前置研究 id 列表。
+- `stepItems`：`IItemStack[][]`，每一级研究可提交的物品。
+- `source`：字符串，Codex 来源文字，可省略。
+- `description`：字符串，Codex 描述文字，可省略。
+
+逐行注释示例：
+
+```zenscript
+// 添加或替换一条研究。
 Research.addResearch(
-    // 第 1 个参数：研究 id；生成笔记、学习研究、前置判断都用这个 id。
+    // 第 1 个参数：研究 id。
+    // 研究笔记、完成研究、前置判断都使用这个 id。
     "pack:test_research",
-    // 第 2 个参数：研究显示名；会显示在 Codex、研究笔记和完成研究 tooltip 中。
+
+    // 第 2 个参数：研究显示名称。
+    // 会显示在 Codex、研究笔记和完成研究 tooltip 中。
     "测试研究",
-    // 第 3 个参数：研究星级；必须是 1 到 5，这里表示两级研究。
+
+    // 第 3 个参数：研究星级。
+    // 必须为 1 到 5，这里表示两级研究。
     2,
-    // 第 4 个参数：前置研究列表；玩家必须先掌握这些研究才算解锁。
+
+    // 第 4 个参数：前置研究列表。
+    // 玩家必须先掌握这些研究，该研究才算解锁。
     [
-        // 第 1 个前置研究；这里要求玩家先掌握秘典研究。
+        // 前置研究 1：秘典入门。
         "eidolon:codex"
     ],
-    // 第 5 个参数：每一级可选择提交的物品；外层数组数量必须等于星级。
+
+    // 第 5 个参数：每一级可提交物品。
+    // 外层数组数量必须等于星级。
     [
-        // 第 1 级研究桌任务组；这一数组中的每个物品都会生成一条可选任务。
+        // 第 1 级研究任务组。
         [
-            // 第 1 级可选任务 1；提交 2 张纸即可完成第 1 级。
+            // 可选提交项 1：提交 2 张纸。
             <minecraft:paper> * 2,
-            // 第 1 级可选任务 2；提交魔法墨水也可完成第 1 级。
+            // 可选提交项 2：提交魔法墨水。
             <eidolon:magic_ink>
         ],
-        // 第 2 级研究桌任务组；完成第 1 级进度后才会出现。
+
+        // 第 2 级研究任务组。
         [
-            // 第 2 级可选任务 1；提交羊皮纸即可完成第 2 级。
+            // 可选提交项 1：提交羊皮纸。
             <eidolon:parchment>,
-            // 第 2 级可选任务 2；提交金锭也可完成第 2 级。
+            // 可选提交项 2：提交金锭。
             <minecraft:gold_ingot>
         ]
     ],
-    // 第 6 个参数：来源说明；会显示在 Codex 的“来源”区域。
-    "用笔记工具右键测试方块。",
-    // 第 7 个参数：研究描述；会显示在 Codex 的研究详情页。
-    "这是由 CraftTweaker 定义的研究描述。"
-);
 
-// 如果想继续使用 lang 文件，可以使用 addResearchLang。
+    // 第 6 个参数：来源文字。
+    // 会显示在 Codex 的来源区域。
+    "用笔记工具右键测试方块。",
+
+    // 第 7 个参数：描述文字。
+    // 会显示在 Codex 的研究详情页。
+    "这是由 CraftTweaker 定义的研究。"
+);
+```
+
+### 使用 lang 键添加研究
+
+方法：
+
+```zenscript
+Research.addResearchLang(id, stars, prerequisites, stepItems, sourceKey);
+```
+
+说明：
+
+- 显示名会走 lang key。
+- 适合整合包自行维护 lang 文件时使用。
+
+逐行注释示例：
+
+```zenscript
+// 添加一条使用 lang 键的研究。
 Research.addResearchLang(
-    // 第 1 个参数：研究 id；名称键会自动使用 research.pack.lang_research。
+    // 第 1 个参数：研究 id。
     "pack:lang_research",
-    // 第 2 个参数：研究星级；这里表示 1 级研究。
+
+    // 第 2 个参数：研究星级。
     1,
-    // 第 3 个参数：前置研究列表；空数组表示没有前置。
+
+    // 第 3 个参数：前置研究列表。
+    // 空数组表示没有前置。
     [],
-    // 第 4 个参数：每一级可选择提交的物品；外层数量必须等于星级。
+
+    // 第 4 个参数：每一级可提交物品。
     [
-        // 第 1 级研究桌任务组；这里只提供一本书这一种可选任务。
+        // 第 1 级研究任务组。
         [
-            // 第 1 级可选任务 1；提交书即可完成该级。
+            // 提交一本书即可完成。
             <minecraft:book>
         ]
     ],
-    // 第 5 个参数：来源翻译键；会用 lang 文件里的 research_source.pack.lang_research。
+
+    // 第 5 个参数：来源文本 lang key。
     "research_source.pack.lang_research"
 );
+```
 
-// 添加方块触发；玩家用笔记工具右键黑曜石时会生成 pack:test_research 的研究笔记。
+### 添加研究触发
+
+```zenscript
+// 方块触发。
+// 玩家用笔记工具右键黑曜石时，生成 pack:test_research 研究笔记。
 Research.addBlockTrigger("minecraft:obsidian", "pack:test_research");
-// 添加实体触发；玩家用笔记工具右键猪时会生成 pack:test_research 的研究笔记。
-Research.addEntityTrigger("minecraft:pig", "pack:test_research");
-// 添加维度触发；玩家在主世界右键空气时会生成 pack:test_research 的研究笔记。
-Research.addDimensionTrigger(0, "pack:test_research");
-// 添加流体触发；玩家用笔记工具右键静态水时会生成 pack:test_research 的研究笔记。
-Research.addFluidTrigger("minecraft:water", "pack:test_research");
-// 添加流体触发；玩家用笔记工具右键流动水时会生成 pack:test_research 的研究笔记。
-Research.addFluidTrigger("minecraft:flowing_water", "pack:test_research");
 
-// 按研究 id 删除；这里会删除内置贪食研究，同时移除它已有的触发绑定。
+// 实体触发。
+// 玩家用笔记工具右键猪时，生成 pack:test_research 研究笔记。
+Research.addEntityTrigger("minecraft:pig", "pack:test_research");
+
+// 维度触发。
+// 玩家在主世界右键空气时，生成 pack:test_research 研究笔记。
+Research.addDimensionTrigger(0, "pack:test_research");
+
+// 流体触发。
+// 玩家用笔记工具右键静态水时，生成 pack:test_research 研究笔记。
+Research.addFluidTrigger("minecraft:water", "pack:test_research");
+
+// 流体触发。
+// 玩家用笔记工具右键流动水时，生成 pack:test_research 研究笔记。
+Research.addFluidTrigger("minecraft:flowing_water", "pack:test_research");
+```
+
+触发规则：
+
+- 同一个来源可以绑定多个研究。
+- 如果同一个来源绑定多个研究，玩家每次触发会轮流生成不同研究笔记。
+- 轮换进度按玩家保存。
+- 方块、实体、维度、流体的轮换互相独立。
+- 当前实现不检查玩家是否已经掌握该研究；触发成功就会生成笔记。
+
+### 删除研究和触发
+
+```zenscript
+// 按研究 id 删除。
 Research.removeById("eidolon:gluttony");
-// 删除某个方块的全部研究触发；这里移除黑曜石相关触发。
+
+// 删除某个方块的全部研究触发。
 Research.removeBlockTriggers("minecraft:obsidian");
-// 删除某个实体的全部研究触发；这里移除猪相关触发。
+
+// 删除某个实体的全部研究触发。
 Research.removeEntityTriggers("minecraft:pig");
-// 删除某个维度的全部研究触发；这里移除主世界相关触发。
+
+// 删除某个维度的全部研究触发。
 Research.removeDimensionTriggers(0);
-// 删除某个流体方块的全部研究触发；这里移除静态水相关触发。
+
+// 删除某个流体方块的全部研究触发。
 Research.removeFluidTriggers("minecraft:water");
-// 删除全部研究；通常只在整包完全重写研究体系时使用。
+
+// 删除全部研究。
 // Research.removeAll();
-// 删除全部研究触发；通常只在整包完全重写笔记生成来源时使用。
+
+// 删除全部研究触发。
 // Research.removeAllTriggers();
 ```
 
-自定义研究替换内置研究时，可以用相同 id 再 `addResearch`。已有触发会自动指向新的研究对象；如果要彻底重写触发来源，先调用对应的 `remove...Triggers` 再重新添加。
+## 调试建议
 
-同一个触发来源可以绑定多个研究。例如 `minecraft:water` 同时绑定内置水研究和 CT 自定义研究时，玩家每次用笔记工具右键水，会按该来源的可用研究列表轮换生成笔记：第一次给第一个研究，第二次给第二个研究，之后继续循环。轮换进度按玩家保存，并且方块、实体、维度、流体各自独立。
+- 脚本加载失败时，先查看 `crafttweaker.log`。
+- 坩埚配方报错时，优先检查 `stirs` 数量是否等于 `steps` 数量。
+- 坩埚每一步投入物不能超过 6 个。
+- HEI/Codex 不显示新增配方时，确认脚本是否成功加载。
+- 替换内置配方时，先 `removeById` 再添加新配方。
+- 不建议在正式整合包中保留临时测试 `.zs` 文件。
