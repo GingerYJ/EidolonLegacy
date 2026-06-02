@@ -17,13 +17,19 @@ public final class Research {
     private final List<ResourceLocation> prerequisites = new ArrayList<>();
     private final Map<Integer, List<ResearchTask>> specialTasks = new HashMap<>();
     private String sourceKey = "";
+    private String displayName = "";
+    private String description = "";
+    private String sourceText = "";
+    private boolean hasDisplayNameOverride;
+    private boolean hasDescriptionOverride;
+    private boolean hasSourceText;
 
     public Research(ResourceLocation id, int stars) {
         if (stars <= 0) {
             throw new IllegalArgumentException("Research difficulty must be at least one star");
         }
-        if (stars > 10) {
-            throw new IllegalArgumentException("Research difficulty cannot exceed ten stars");
+        if (stars > 5) {
+            throw new IllegalArgumentException("Research difficulty cannot exceed five stars");
         }
         this.id = id;
         this.stars = stars;
@@ -44,12 +50,54 @@ public final class Research {
     }
 
     public Research source(String sourceKey) {
-        this.sourceKey = sourceKey;
+        this.sourceKey = normalize(sourceKey);
+        return this;
+    }
+
+    public Research displayName(String displayName) {
+        this.displayName = normalize(displayName);
+        hasDisplayNameOverride = true;
+        return this;
+    }
+
+    public Research description(String description) {
+        this.description = normalize(description);
+        hasDescriptionOverride = true;
+        return this;
+    }
+
+    public Research sourceText(String sourceText) {
+        this.sourceText = normalize(sourceText);
+        hasSourceText = !this.sourceText.isEmpty();
         return this;
     }
 
     public String getSourceKey() {
         return sourceKey;
+    }
+
+    public String getDisplayNameOverride() {
+        return displayName;
+    }
+
+    public boolean hasDisplayNameOverride() {
+        return hasDisplayNameOverride;
+    }
+
+    public String getDescriptionOverride() {
+        return description;
+    }
+
+    public boolean hasDescriptionOverride() {
+        return hasDescriptionOverride;
+    }
+
+    public String getSourceText() {
+        return sourceText;
+    }
+
+    public boolean hasSourceText() {
+        return hasSourceText;
     }
 
     public List<ResourceLocation> getPrerequisites() {
@@ -95,5 +143,9 @@ public final class Research {
 
     public int getSeed(int rootSeed, int stepsDone) {
         return id.hashCode() * 384780223 ^ stepsDone * 844955129 ^ rootSeed * 112041199 + 6;
+    }
+
+    private static String normalize(String value) {
+        return value == null ? "" : value;
     }
 }

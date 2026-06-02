@@ -41,16 +41,21 @@ public final class AltarRituals {
     private static final String RESOURCE_DIR = "assets/eidolon/altar_rituals";
     private static final JsonContext JSON_CONTEXT = new JsonContext(Reference.MOD_ID);
     private static final Map<ResourceLocation, AltarRitual> RITUALS = new LinkedHashMap<>();
+    private static final List<Runnable> CUSTOMIZATIONS = new ArrayList<>();
+    private static boolean initialized;
 
     private AltarRituals() {
     }
 
     public static void init() {
+        initialized = false;
         RITUALS.clear();
         loadFromClasspath();
         loadFromModSource();
         loadFromDevelopmentSource();
         registerMissingBuiltIns();
+        initialized = true;
+        applyCustomizations();
         Eidolon.LOGGER.info("Loaded {} Eidolon altar rituals", RITUALS.size());
     }
 
@@ -68,6 +73,56 @@ public final class AltarRituals {
 
     public static AltarRitual find(ResourceLocation id) {
         return RITUALS.get(id);
+    }
+
+    public static void addRitual(ResourceLocation id, double capacity, double power, ItemStack result,
+                                 AltarRitual.BehaviorType behavior, Ingredient focus, Ingredient sacrifice,
+                                 ResourceLocation entity, float healthCost, List<Ingredient> offerings) {
+        ItemStack resultCopy = result.copy();
+        Ingredient[] offeringCopy = offerings.toArray(new Ingredient[0]);
+        Ingredient focusCopy = focus == null ? Ingredient.EMPTY : focus;
+        addCustomization(() -> RITUALS.put(id, new AltarRitual(id, capacity, power, resultCopy, behavior,
+                focusCopy, sacrifice, entity, healthCost, offeringCopy)));
+    }
+
+    public static boolean removeRitual(ResourceLocation id) {
+        addCustomization(() -> RITUALS.remove(id));
+        return initialized && !RITUALS.containsKey(id);
+    }
+
+    public static int removeRitualsByOutput(Ingredient output) {
+        int count = initialized ? countRitualsByOutput(output) : 0;
+        addCustomization(() -> RITUALS.entrySet().removeIf(entry -> output.apply(entry.getValue().getResult())));
+        return count;
+    }
+
+    public static int removeAllRituals() {
+        int count = initialized ? RITUALS.size() : 0;
+        addCustomization(RITUALS::clear);
+        return count;
+    }
+
+    private static void addCustomization(Runnable customization) {
+        CUSTOMIZATIONS.add(customization);
+        if (initialized) {
+            customization.run();
+        }
+    }
+
+    private static void applyCustomizations() {
+        for (Runnable customization : CUSTOMIZATIONS) {
+            customization.run();
+        }
+    }
+
+    private static int countRitualsByOutput(Ingredient output) {
+        int count = 0;
+        for (AltarRitual ritual : RITUALS.values()) {
+            if (output.apply(ritual.getResult())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static AltarRitual findBySacrifice(ItemStack sacrifice) {

@@ -1,10 +1,9 @@
 package elucent.eidolon.item;
 
+import elucent.eidolon.Reference;
 import elucent.eidolon.registries.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
-import net.minecraft.block.BlockOldLeaf;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockRedFlower;
 import net.minecraft.block.BlockTallGrass;
@@ -18,14 +17,18 @@ import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -35,34 +38,32 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class AthameItem extends ItemSword {
-    private static final List<HarvestEntry> HARVEST_ENTRIES = Arrays.asList(
-            new HarvestEntry(
-                    Collections.singletonList(new ItemStack(Blocks.TALLGRASS, 1, BlockTallGrass.EnumType.FERN.getMeta())),
-                    () -> new ItemStack(ModBlocks.AVENNIAN_SPRIG_ITEM),
-                    "gui.eidolon.athame_harvest.source.fern"
-            ),
-            new HarvestEntry(
-                    Collections.singletonList(new ItemStack(Blocks.RED_FLOWER, 1, BlockRedFlower.EnumFlowerType.OXEYE_DAISY.getMeta())),
-                    () -> new ItemStack(ModBlocks.MERAMMER_ROOT_ITEM),
-                    "gui.eidolon.athame_harvest.source.oxeye_daisy"
-            ),
-            new HarvestEntry(
-                    Collections.singletonList(new ItemStack(Blocks.WATERLILY)),
-                    () -> new ItemStack(ModBlocks.OANNA_BLOOM_ITEM),
-                    "gui.eidolon.athame_harvest.source.lily_pad"
-            ),
-            new HarvestEntry(
-                    Collections.singletonList(new ItemStack(Blocks.LEAVES, 1, BlockPlanks.EnumType.JUNGLE.getMetadata())),
-                    () -> new ItemStack(ModBlocks.SILDRIAN_SEED_ITEM),
-                    "gui.eidolon.athame_harvest.source.jungle_leaves"
-            )
-    );
+    private static final List<HarvestEntry> HARVEST_ENTRIES = new ArrayList<>();
+
+    static {
+        registerBuiltIn("avennian_sprig_from_fern",
+                new ItemStack(Blocks.TALLGRASS, 1, BlockTallGrass.EnumType.FERN.getMeta()),
+                () -> new ItemStack(ModBlocks.AVENNIAN_SPRIG_ITEM),
+                "gui.eidolon.athame_harvest.source.fern");
+        registerBuiltIn("merammer_root_from_oxeye_daisy",
+                new ItemStack(Blocks.RED_FLOWER, 1, BlockRedFlower.EnumFlowerType.OXEYE_DAISY.getMeta()),
+                () -> new ItemStack(ModBlocks.MERAMMER_ROOT_ITEM),
+                "gui.eidolon.athame_harvest.source.oxeye_daisy");
+        registerBuiltIn("oanna_bloom_from_lily_pad",
+                new ItemStack(Blocks.WATERLILY),
+                () -> new ItemStack(ModBlocks.OANNA_BLOOM_ITEM),
+                "gui.eidolon.athame_harvest.source.lily_pad");
+        registerBuiltIn("sildrian_seed_from_jungle_leaves",
+                new ItemStack(Blocks.LEAVES, 1, BlockPlanks.EnumType.JUNGLE.getMetadata()),
+                () -> new ItemStack(ModBlocks.SILDRIAN_SEED_ITEM),
+                "gui.eidolon.athame_harvest.source.jungle_leaves");
+    }
 
     public AthameItem(ToolMaterial material) {
         super(material);
@@ -152,41 +153,91 @@ public class AthameItem extends ItemSword {
     }
 
     private ItemStack getHarvestable(IBlockState state) {
-        Block block = state.getBlock();
-        if (block == Blocks.WATERLILY) {
-            return new ItemStack(ModBlocks.OANNA_BLOOM_ITEM);
+        ItemStack source = getSourceStack(state);
+        if (source.isEmpty()) {
+            return ItemStack.EMPTY;
         }
-        if (block == Blocks.TALLGRASS && state.getValue(BlockTallGrass.TYPE) == BlockTallGrass.EnumType.FERN) {
-            return new ItemStack(ModBlocks.AVENNIAN_SPRIG_ITEM);
-        }
-        if (block == Blocks.RED_FLOWER
-                && state.getValue(((BlockFlower) block).getTypeProperty()) == BlockFlower.EnumFlowerType.OXEYE_DAISY) {
-            return new ItemStack(ModBlocks.MERAMMER_ROOT_ITEM);
-        }
-        if (block == Blocks.LEAVES
-                && state.getValue(BlockOldLeaf.VARIANT) == BlockPlanks.EnumType.JUNGLE) {
-            return new ItemStack(ModBlocks.SILDRIAN_SEED_ITEM);
+        for (HarvestEntry entry : HARVEST_ENTRIES) {
+            if (entry.matches(source)) {
+                return entry.getResult();
+            }
         }
         return ItemStack.EMPTY;
     }
 
+    private ItemStack getSourceStack(IBlockState state) {
+        Block block = state.getBlock();
+        Item item = Item.getItemFromBlock(block);
+        return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item, 1, block.damageDropped(state));
+    }
+
     public static List<HarvestEntry> getHarvestEntries() {
-        return HARVEST_ENTRIES;
+        return Collections.unmodifiableList(new ArrayList<>(HARVEST_ENTRIES));
+    }
+
+    public static void addHarvestEntry(ResourceLocation id, Ingredient source, List<ItemStack> sourceStacks,
+                                       ItemStack result, String sourceKey) {
+        ItemStack resultCopy = result.copy();
+        addHarvestEntry(id, source, sourceStacks, () -> resultCopy.copy(), sourceKey);
+    }
+
+    private static void addHarvestEntry(ResourceLocation id, Ingredient source, List<ItemStack> sourceStacks,
+                                        Supplier<ItemStack> result, String sourceKey) {
+        removeHarvestEntry(id);
+        HARVEST_ENTRIES.add(new HarvestEntry(id, source, sourceStacks, result, sourceKey));
+    }
+
+    public static boolean removeHarvestEntry(ResourceLocation id) {
+        return HARVEST_ENTRIES.removeIf(entry -> entry.getId().equals(id));
+    }
+
+    public static int removeHarvestEntriesByOutput(Ingredient output) {
+        return removeHarvestEntries(entry -> output.apply(entry.getResult()));
+    }
+
+    public static int removeHarvestEntriesBySource(Ingredient source) {
+        return removeHarvestEntries(entry -> entry.hasSourceMatching(source));
+    }
+
+    public static int removeAllHarvestEntries() {
+        int count = HARVEST_ENTRIES.size();
+        HARVEST_ENTRIES.clear();
+        return count;
+    }
+
+    private static int removeHarvestEntries(java.util.function.Predicate<HarvestEntry> predicate) {
+        int before = HARVEST_ENTRIES.size();
+        HARVEST_ENTRIES.removeIf(predicate);
+        return before - HARVEST_ENTRIES.size();
+    }
+
+    private static void registerBuiltIn(String name, ItemStack source, Supplier<ItemStack> result, String sourceKey) {
+        addHarvestEntry(new ResourceLocation(Reference.MOD_ID, name), Ingredient.fromStacks(source),
+                Collections.singletonList(source), result, sourceKey);
     }
 
     public static final class HarvestEntry {
+        private final ResourceLocation id;
+        private final Ingredient source;
         private final List<ItemStack> sources;
         private final Supplier<ItemStack> result;
         private final String sourceKey;
 
-        private HarvestEntry(List<ItemStack> sources, Supplier<ItemStack> result, String sourceKey) {
-            this.sources = sources;
+        private HarvestEntry(ResourceLocation id, Ingredient source, List<ItemStack> sources,
+                             Supplier<ItemStack> result, String sourceKey) {
+            this.id = id;
+            this.source = source;
+            this.sources = copySources(sources);
             this.result = result;
             this.sourceKey = sourceKey;
         }
 
+        public ResourceLocation getId() {
+            return id;
+        }
+
         public List<ItemStack> getSources() {
-            return sources;
+            return copySources(sources);
         }
 
         public ItemStack getResult() {
@@ -194,7 +245,36 @@ public class AthameItem extends ItemSword {
         }
 
         public String getSourceKey() {
-            return sourceKey;
+            if (sourceKey != null && !sourceKey.isEmpty()) {
+                return sourceKey;
+            }
+            return sources.isEmpty() ? "" : sources.get(0).getDisplayName();
+        }
+
+        private boolean matches(ItemStack stack) {
+            return source.apply(stack);
+        }
+
+        private boolean hasSourceMatching(Ingredient ingredient) {
+            for (ItemStack stack : sources) {
+                if (ingredient.apply(stack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static List<ItemStack> copySources(List<ItemStack> sources) {
+            List<ItemStack> copy = new ArrayList<>();
+            if (sources != null) {
+                for (ItemStack source : sources) {
+                    copy.add(source == null ? ItemStack.EMPTY : source.copy());
+                }
+            }
+            if (copy.isEmpty()) {
+                copy.add(ItemStack.EMPTY);
+            }
+            return copy;
         }
     }
 }

@@ -318,7 +318,7 @@ public class CodexGui extends GuiScreen {
 
     private void drawResearchLine(Research research, int x, int y, boolean selected, int state) {
         boolean known = state == STATE_KNOWN;
-        String name = known ? I18n.format(research.getTranslationKey()) : I18n.format("gui.eidolon.codex.unknown");
+        String name = known ? getResearchName(research) : I18n.format("gui.eidolon.codex.unknown");
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(INDEX_PAGE);
         drawModalRectWithCustomSizedTexture(x + 1, y - 5, 128, 0, 122, 18, 256, 256);
@@ -343,12 +343,12 @@ public class CodexGui extends GuiScreen {
             fontRenderer.drawSplitString(detail, left + 4, top + 62, 120, 0x5b4732);
             return;
         }
-        String name = I18n.format(research.getTranslationKey());
+        String name = getResearchName(research);
         drawCenteredPageTitle(name, left, top + 36, 0x2f2118);
         int y = top + 58;
         researchDetailPage = clampResearchDetailPage(researchDetailPage);
         if (researchDetailPage == DETAIL_PAGE_TEXT) {
-            fontRenderer.drawSplitString(I18n.format(research.getDescriptionKey()), left + 4, y, 120, 0x5b4732);
+            fontRenderer.drawSplitString(getResearchDescription(research), left + 4, y, 120, 0x5b4732);
             drawResearchDetailPageArrows(left, top, mouseX, mouseY);
             return;
         }
@@ -357,9 +357,7 @@ public class CodexGui extends GuiScreen {
         y += 18;
         fontRenderer.drawString(TextFormatting.UNDERLINE + I18n.format("gui.eidolon.codex.source"), left + 4, y, 0x3a2418);
         y += 14;
-        String source = research.getSourceKey().isEmpty()
-                ? I18n.format("gui.eidolon.codex.none")
-                : I18n.format(research.getSourceKey());
+        String source = getResearchSource(research);
         y += drawSplitStringWithHeight(source, left + 10, y, 112, 0x5b4732) + 12;
 
         fontRenderer.drawString(TextFormatting.UNDERLINE + I18n.format("gui.eidolon.codex.prerequisites"), left + 4, y, 0x3a2418);
@@ -372,13 +370,34 @@ public class CodexGui extends GuiScreen {
                 Research prerequisiteResearch = Researches.find(prerequisite);
                 String prerequisiteName = prerequisiteResearch == null
                         ? prerequisite.toString()
-                        : I18n.format(prerequisiteResearch.getTranslationKey());
+                        : getResearchName(prerequisiteResearch);
                 int color = KnowledgeUtil.knowsResearch(player, prerequisite) ? 0x5b4732 : 0x8f3f32;
                 fontRenderer.drawString("- " + prerequisiteName, left + 8, y, color);
                 y += 12;
             }
         }
         drawResearchDetailPageArrows(left, top, mouseX, mouseY);
+    }
+
+    private String getResearchName(Research research) {
+        return research.hasDisplayNameOverride()
+                ? research.getDisplayNameOverride()
+                : I18n.format(research.getTranslationKey());
+    }
+
+    private String getResearchDescription(Research research) {
+        return research.hasDescriptionOverride()
+                ? research.getDescriptionOverride()
+                : I18n.format(research.getDescriptionKey());
+    }
+
+    private String getResearchSource(Research research) {
+        if (research.hasSourceText()) {
+            return research.getSourceText();
+        }
+        return research.getSourceKey().isEmpty()
+                ? I18n.format("gui.eidolon.codex.none")
+                : I18n.format(research.getSourceKey());
     }
 
     private int drawSplitStringWithHeight(String text, int x, int y, int width, int color) {
@@ -818,6 +837,7 @@ public class CodexGui extends GuiScreen {
         List<Research> researches = new ArrayList<>(Researches.getResearches());
         researches.sort(Comparator
                 .comparingInt(this::getResearchState)
+                .thenComparing(this::getResearchName)
                 .thenComparing(research -> research.getId().toString()));
         return researches;
     }

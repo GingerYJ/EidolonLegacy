@@ -3,25 +3,30 @@ package elucent.eidolon.item;
 import elucent.eidolon.research.Research;
 import elucent.eidolon.research.Researches;
 import elucent.eidolon.registries.ModItems;
-import elucent.eidolon.util.KnowledgeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class NotetakingToolsItem extends Item {
+    private static final String ROTATION_ROOT = "eidolonResearchNoteRotation";
+
     public NotetakingToolsItem() {
         setMaxStackSize(16);
     }
@@ -32,11 +37,14 @@ public class NotetakingToolsItem extends Item {
         RayTraceResult hit = rayTrace(world, player, true);
         if (hit != null && hit.typeOfHit == RayTraceResult.Type.BLOCK) {
             Block block = world.getBlockState(hit.getBlockPos()).getBlock();
-            if (createNotes(player, stack, hand, Researches.getFluidResearches(block))) {
+            ResourceLocation id = block.getRegistryName();
+            if (createNotes(player, stack, hand, Researches.getFluidResearches(block),
+                    id == null ? "fluid:unknown" : "fluid:" + id)) {
                 return new ActionResult<>(EnumActionResult.SUCCESS, stack);
             }
         }
-        if (createNotes(player, stack, hand, Researches.getDimensionResearches(player.dimension))) {
+        if (createNotes(player, stack, hand, Researches.getDimensionResearches(player.dimension),
+                "dimension:" + player.dimension)) {
             return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
         return new ActionResult<>(EnumActionResult.PASS, stack);
@@ -46,14 +54,18 @@ public class NotetakingToolsItem extends Item {
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand,
                                       EnumFacing facing, float hitX, float hitY, float hitZ) {
         Block block = world.getBlockState(pos).getBlock();
-        return createNotes(player, player.getHeldItem(hand), hand, Researches.getBlockResearches(block))
+        ResourceLocation id = block.getRegistryName();
+        return createNotes(player, player.getHeldItem(hand), hand, Researches.getBlockResearches(block),
+                id == null ? "block:unknown" : "block:" + id)
                 ? EnumActionResult.SUCCESS
                 : EnumActionResult.PASS;
     }
 
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
-        return createNotes(player, stack, hand, Researches.getEntityResearches(target));
+        ResourceLocation id = net.minecraft.entity.EntityList.getKey(target);
+        return createNotes(player, stack, hand, Researches.getEntityResearches(target),
+                id == null ? "entity:unknown" : "entity:" + id);
     }
 
     @SubscribeEvent
@@ -69,8 +81,9 @@ public class NotetakingToolsItem extends Item {
         }
     }
 
-    private static boolean createNotes(EntityPlayer player, ItemStack tools, EnumHand hand, Collection<Research> researches) {
-        Research research = chooseResearch(player, researches);
+    private static boolean createNotes(EntityPlayer player, ItemStack tools, EnumHand hand,
+                                       Collection<Research> researches, String sourceKey) {
+        Research research = chooseResearch(player, researches, sourceKey);
         if (research == null) {
             return false;
         }
@@ -86,18 +99,33 @@ public class NotetakingToolsItem extends Item {
         return true;
     }
 
-    private static Research chooseResearch(EntityPlayer player, Collection<Research> researches) {
-        Research fallback = null;
+    private static Research chooseResearch(EntityPlayer player, Collection<Research> researches, String sourceKey) {
+        List<Research> unlocked = new ArrayList<>();
         for (Research research : researches) {
             if (research.isUnlockedFor(player)) {
-                if (fallback == null) {
-                    fallback = research;
-                }
-                if (!KnowledgeUtil.knowsResearch(player, research.getId())) {
-                    return research;
-                }
+                unlocked.add(research);
             }
         }
-        return fallback;
+        if (unlocked.isEmpty()) {
+            return null;
+        }
+
+        NBTTagCompound rotations = getRotationTag(player);
+        int start = Math.floorMod(rotations.getInteger(sourceKey), unlocked.size());
+        Research chosen = unlocked.get(start);
+        rotations.setInteger(sourceKey, (start + 1) % unlocked.size());
+        return chosen;
+    }
+
+    private static NBTTagCompound getRotationTag(EntityPlayer player) {
+        NBTTagCompound entityData = player.getEntityData();
+        if (!entityData.hasKey(EntityPlayer.PERSISTED_NBT_TAG)) {
+            entityData.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+        }
+        NBTTagCompound persisted = entityData.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+        if (!persisted.hasKey(ROTATION_ROOT)) {
+            persisted.setTag(ROTATION_ROOT, new NBTTagCompound());
+        }
+        return persisted.getCompoundTag(ROTATION_ROOT);
     }
 }

@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -35,14 +36,19 @@ public final class WorktableRecipes {
     private static final String RESOURCE_DIR = "assets/eidolon/worktable_recipes";
     private static final JsonContext JSON_CONTEXT = new JsonContext(Reference.MOD_ID);
     private static final Map<ResourceLocation, WorktableRecipe> RECIPES = new LinkedHashMap<>();
+    private static final List<Runnable> CUSTOMIZATIONS = new ArrayList<>();
+    private static boolean initialized;
 
     private WorktableRecipes() {
     }
 
     public static void init() {
+        initialized = false;
         RECIPES.clear();
         loadFromClasspath();
         loadFromModSource();
+        initialized = true;
+        applyCustomizations();
         Eidolon.LOGGER.info("Loaded {} Eidolon worktable recipes", RECIPES.size());
     }
 
@@ -87,6 +93,53 @@ public final class WorktableRecipes {
 
     public static WorktableRecipe getRecipe(ResourceLocation id) {
         return RECIPES.get(id);
+    }
+
+    public static void addRecipe(ResourceLocation id, Ingredient[] grid, Ingredient[] reagents, ItemStack result) {
+        Ingredient[] gridCopy = Arrays.copyOf(grid, grid.length);
+        Ingredient[] reagentCopy = Arrays.copyOf(reagents, reagents.length);
+        ItemStack resultCopy = result.copy();
+        addCustomization(() -> RECIPES.put(id, new WorktableRecipe(id, gridCopy, reagentCopy, resultCopy)));
+    }
+
+    public static boolean removeRecipe(ResourceLocation id) {
+        addCustomization(() -> RECIPES.remove(id));
+        return initialized && !RECIPES.containsKey(id);
+    }
+
+    public static int removeRecipesByOutput(Ingredient output) {
+        int count = initialized ? countRecipesByOutput(output) : 0;
+        addCustomization(() -> RECIPES.entrySet().removeIf(entry -> output.apply(entry.getValue().getResult())));
+        return count;
+    }
+
+    public static int removeAllRecipes() {
+        int count = initialized ? RECIPES.size() : 0;
+        addCustomization(RECIPES::clear);
+        return count;
+    }
+
+    private static void addCustomization(Runnable customization) {
+        CUSTOMIZATIONS.add(customization);
+        if (initialized) {
+            customization.run();
+        }
+    }
+
+    private static void applyCustomizations() {
+        for (Runnable customization : CUSTOMIZATIONS) {
+            customization.run();
+        }
+    }
+
+    private static int countRecipesByOutput(Ingredient output) {
+        int count = 0;
+        for (WorktableRecipe recipe : RECIPES.values()) {
+            if (output.apply(recipe.getResult())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static WorktableRecipe findMatch(ItemStack[] inputGrid, ItemStack[] inputReagents) {

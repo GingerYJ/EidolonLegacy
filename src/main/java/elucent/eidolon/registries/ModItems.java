@@ -478,7 +478,7 @@ public final class ModItems {
                 stars.append(i < done ? "*" : "o");
             }
             tooltip.add(stars.toString());
-            tooltip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + I18n.translateToLocal(research.getTranslationKey()));
+            tooltip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + researchName(research));
         }
 
         @Override
@@ -504,7 +504,7 @@ public final class ModItems {
             NBTTagCompound tag = stack.getTagCompound();
             if (tag != null && tag.hasKey("research")) {
                 Research research = Researches.find(new ResourceLocation(tag.getString("research")));
-                String name = research == null ? tag.getString("research") : I18n.translateToLocal(research.getTranslationKey());
+                String name = research == null ? tag.getString("research") : researchName(research);
                 tooltip.add(TextFormatting.GOLD + "" + TextFormatting.ITALIC + name);
                 if (research != null && isKnownClient(research)) {
                     tooltip.add(TextFormatting.GRAY + I18n.translateToLocal("tooltip.eidolon.research_known"));
@@ -541,6 +541,12 @@ public final class ModItems {
             EntityPlayer player = net.minecraft.client.Minecraft.getMinecraft().player;
             return player != null && KnowledgeUtil.knowsResearch(player, research.getId());
         }
+    }
+
+    private static String researchName(Research research) {
+        return research.hasDisplayNameOverride()
+                ? research.getDisplayNameOverride()
+                : I18n.translateToLocal(research.getTranslationKey());
     }
 
     private static final class CodexItem extends Item {

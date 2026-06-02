@@ -19,13 +19,18 @@ import java.util.Map;
 
 public final class CrucibleRecipes {
     private static final Map<ResourceLocation, CrucibleRecipe> RECIPES = new LinkedHashMap<>();
+    private static final List<Runnable> CUSTOMIZATIONS = new ArrayList<>();
+    private static boolean initialized;
 
     private CrucibleRecipes() {
     }
 
     public static void init() {
+        initialized = false;
         RECIPES.clear();
         registerBuiltIns();
+        initialized = true;
+        applyCustomizations();
         Eidolon.LOGGER.info("Loaded {} Eidolon crucible recipes", RECIPES.size());
     }
 
@@ -35,6 +40,58 @@ public final class CrucibleRecipes {
 
     public static CrucibleRecipe find(ResourceLocation id) {
         return RECIPES.get(id);
+    }
+
+    public static void addRecipe(ResourceLocation id, ItemStack result, Ingredient stirrer, FluidStack fluid,
+                                 List<CrucibleRecipe.Step> steps) {
+        ItemStack resultCopy = result.copy();
+        FluidStack fluidCopy = fluid.copy();
+        List<CrucibleRecipe.Step> stepCopy = new ArrayList<>(steps);
+        addCustomization(() -> RECIPES.put(id, new CrucibleRecipe(id, stepCopy, resultCopy, stirrer, fluidCopy)));
+    }
+
+    public static boolean removeRecipe(ResourceLocation id) {
+        addCustomization(() -> RECIPES.remove(id));
+        return initialized && !RECIPES.containsKey(id);
+    }
+
+    public static int removeRecipesByOutput(Ingredient output) {
+        int count = initialized ? countRecipesByOutput(output) : 0;
+        addCustomization(() -> RECIPES.entrySet().removeIf(entry -> output.apply(entry.getValue().getResult())));
+        return count;
+    }
+
+    public static int removeAllRecipes() {
+        int count = initialized ? RECIPES.size() : 0;
+        addCustomization(RECIPES::clear);
+        return count;
+    }
+
+    public static CrucibleRecipe.Step makeStep(int stirs, List<Ingredient> ingredients) {
+        return new CrucibleRecipe.Step(stirs, ingredients);
+    }
+
+    private static void addCustomization(Runnable customization) {
+        CUSTOMIZATIONS.add(customization);
+        if (initialized) {
+            customization.run();
+        }
+    }
+
+    private static void applyCustomizations() {
+        for (Runnable customization : CUSTOMIZATIONS) {
+            customization.run();
+        }
+    }
+
+    private static int countRecipesByOutput(Ingredient output) {
+        int count = 0;
+        for (CrucibleRecipe recipe : RECIPES.values()) {
+            if (output.apply(recipe.getResult())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static CrucibleRecipe find(List<CrucibleRecipe.ProvidedStep> steps, FluidStack fluid) {

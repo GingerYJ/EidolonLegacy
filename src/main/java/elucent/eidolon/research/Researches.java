@@ -30,19 +30,20 @@ public final class Researches {
     private static final Map<Integer, List<Research>> DIMENSION_RESEARCHES = new LinkedHashMap<>();
     private static final Map<ResourceLocation, List<Research>> FLUID_RESEARCHES = new LinkedHashMap<>();
     private static final List<Function<Random, ResearchTask>> TASK_POOL = new ArrayList<>();
+    private static final List<Runnable> CUSTOMIZATIONS = new ArrayList<>();
     private static boolean initialized;
 
     private Researches() {
     }
 
     public static void init() {
+        initialized = false;
         RESEARCHES.clear();
         BLOCK_RESEARCHES.clear();
         ENTITY_RESEARCHES.clear();
         DIMENSION_RESEARCHES.clear();
         FLUID_RESEARCHES.clear();
         TASK_POOL.clear();
-        initialized = true;
 
         addTask(ResearchTask.ScrivenerItems::new);
         addTask(ResearchTask.ScrivenerItems::new);
@@ -94,11 +95,39 @@ public final class Researches {
         addFluidResearch(Blocks.FLOWING_WATER, water);
         addFluidResearch(Blocks.LAVA, lava);
         addFluidResearch(Blocks.FLOWING_LAVA, lava);
+
+        initialized = true;
+        applyCustomizations();
     }
 
     public static Research register(Research research) {
         RESEARCHES.put(research.getId(), research);
+        replaceResearchInTriggers(research);
         return research;
+    }
+
+    public static void addResearch(Research research) {
+        addCustomization(() -> register(research));
+    }
+
+    public static boolean removeResearch(ResourceLocation id) {
+        addCustomization(() -> {
+            RESEARCHES.remove(id);
+            removeResearchFromTriggers(id);
+        });
+        return initialized && !RESEARCHES.containsKey(id);
+    }
+
+    public static int removeAllResearches() {
+        int count = initialized ? RESEARCHES.size() : 0;
+        addCustomization(() -> {
+            RESEARCHES.clear();
+            BLOCK_RESEARCHES.clear();
+            ENTITY_RESEARCHES.clear();
+            DIMENSION_RESEARCHES.clear();
+            FLUID_RESEARCHES.clear();
+        });
+        return count;
     }
 
     public static void addTask(Function<Random, ResearchTask> task) {
@@ -121,12 +150,24 @@ public final class Researches {
         BLOCK_RESEARCHES.computeIfAbsent(id, key -> new ArrayList<>()).add(research);
     }
 
+    public static void addBlockResearch(ResourceLocation id, ResourceLocation researchId) {
+        addCustomization(() -> addBlockResearch(id, requireResearch(researchId)));
+    }
+
     public static void addEntityResearch(ResourceLocation id, Research research) {
         ENTITY_RESEARCHES.computeIfAbsent(id, key -> new ArrayList<>()).add(research);
     }
 
+    public static void addEntityResearch(ResourceLocation id, ResourceLocation researchId) {
+        addCustomization(() -> addEntityResearch(id, requireResearch(researchId)));
+    }
+
     public static void addDimensionResearch(int dimension, Research research) {
         DIMENSION_RESEARCHES.computeIfAbsent(dimension, key -> new ArrayList<>()).add(research);
+    }
+
+    public static void addDimensionResearch(int dimension, ResourceLocation researchId) {
+        addCustomization(() -> addDimensionResearch(dimension, requireResearch(researchId)));
     }
 
     public static void addFluidResearch(Block block, Research research) {
@@ -134,6 +175,35 @@ public final class Researches {
         if (id != null) {
             FLUID_RESEARCHES.computeIfAbsent(id, key -> new ArrayList<>()).add(research);
         }
+    }
+
+    public static void addFluidResearch(ResourceLocation id, ResourceLocation researchId) {
+        addCustomization(() -> FLUID_RESEARCHES.computeIfAbsent(id, key -> new ArrayList<>()).add(requireResearch(researchId)));
+    }
+
+    public static void removeBlockResearches(ResourceLocation id) {
+        addCustomization(() -> BLOCK_RESEARCHES.remove(id));
+    }
+
+    public static void removeEntityResearches(ResourceLocation id) {
+        addCustomization(() -> ENTITY_RESEARCHES.remove(id));
+    }
+
+    public static void removeDimensionResearches(int dimension) {
+        addCustomization(() -> DIMENSION_RESEARCHES.remove(dimension));
+    }
+
+    public static void removeFluidResearches(ResourceLocation id) {
+        addCustomization(() -> FLUID_RESEARCHES.remove(id));
+    }
+
+    public static void removeAllTriggers() {
+        addCustomization(() -> {
+            BLOCK_RESEARCHES.clear();
+            ENTITY_RESEARCHES.clear();
+            DIMENSION_RESEARCHES.clear();
+            FLUID_RESEARCHES.clear();
+        });
     }
 
     public static Collection<Research> getBlockResearches(Block block) {
@@ -231,6 +301,64 @@ public final class Researches {
     private static void ensureInitialized() {
         if (!initialized) {
             init();
+        }
+    }
+
+    private static void addCustomization(Runnable customization) {
+        CUSTOMIZATIONS.add(customization);
+        if (initialized) {
+            customization.run();
+        }
+    }
+
+    private static void applyCustomizations() {
+        for (Runnable customization : CUSTOMIZATIONS) {
+            customization.run();
+        }
+    }
+
+    private static Research requireResearch(ResourceLocation id) {
+        Research research = RESEARCHES.get(id);
+        if (research == null) {
+            throw new IllegalArgumentException("Unknown Eidolon research id: " + id);
+        }
+        return research;
+    }
+
+    private static void replaceResearchInTriggers(Research research) {
+        replaceResearchInTriggers(BLOCK_RESEARCHES, research);
+        replaceResearchInTriggers(ENTITY_RESEARCHES, research);
+        replaceResearchInTriggers(DIMENSION_RESEARCHES, research);
+        replaceResearchInTriggers(FLUID_RESEARCHES, research);
+    }
+
+    private static <K> void replaceResearchInTriggers(Map<K, List<Research>> map, Research research) {
+        for (List<Research> list : map.values()) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getId().equals(research.getId())) {
+                    list.set(i, research);
+                }
+            }
+        }
+    }
+
+    private static void removeResearchFromTriggers(ResourceLocation id) {
+        removeResearchFromTriggers(BLOCK_RESEARCHES, id);
+        removeResearchFromTriggers(ENTITY_RESEARCHES, id);
+        removeResearchFromTriggers(DIMENSION_RESEARCHES, id);
+        removeResearchFromTriggers(FLUID_RESEARCHES, id);
+    }
+
+    private static <K> void removeResearchFromTriggers(Map<K, List<Research>> map, ResourceLocation id) {
+        List<K> emptyKeys = new ArrayList<>();
+        for (Map.Entry<K, List<Research>> entry : map.entrySet()) {
+            entry.getValue().removeIf(research -> research.getId().equals(id));
+            if (entry.getValue().isEmpty()) {
+                emptyKeys.add(entry.getKey());
+            }
+        }
+        for (K key : emptyKeys) {
+            map.remove(key);
         }
     }
 }
