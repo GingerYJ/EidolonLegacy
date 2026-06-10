@@ -26,6 +26,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -227,6 +229,7 @@ public class SummoningStaffItem extends Item {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         String selected = hasCharges(stack) ? getSelectedChargeEntityId(stack) : getSelectedType(stack);
         tooltip.add(I18n.format("tooltip.eidolon.summoning_staff_selected", localizeEntity(selected)));

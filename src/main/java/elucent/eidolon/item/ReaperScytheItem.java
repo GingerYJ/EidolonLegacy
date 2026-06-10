@@ -14,6 +14,8 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -71,6 +73,7 @@ public class ReaperScytheItem extends EidolonSwordItem {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, List<String> tooltip,
                                net.minecraft.client.util.ITooltipFlag flagIn) {
         tooltip.add("");

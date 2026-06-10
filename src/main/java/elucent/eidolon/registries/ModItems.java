@@ -620,6 +620,7 @@ public final class ModItems {
         }
 
         @Override
+        @SideOnly(Side.CLIENT)
         public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
             if (!stack.hasTagCompound()) {
                 return;
@@ -663,6 +664,7 @@ public final class ModItems {
         }
 
         @Override
+        @SideOnly(Side.CLIENT)
         public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, List<String> tooltip, net.minecraft.client.util.ITooltipFlag flagIn) {
             if (!stack.hasTagCompound()) {
                 return;

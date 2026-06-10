@@ -3,12 +3,14 @@ package elucent.eidolon.world;
 import elucent.eidolon.CommonConfig;
 import elucent.eidolon.registries.ModBlocks;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
 import java.util.Locale;
@@ -101,7 +103,7 @@ public final class EidolonWorldGenerator implements IWorldGenerator {
     }
 
     private boolean isIllwoodBiome(Biome biome) {
-        String name = biome.getBiomeName().toLowerCase(Locale.ROOT);
+        String name = getBiomeId(biome);
         return name.contains("forest")
                 || name.contains("swamp")
                 || name.contains("swampland")
@@ -149,13 +151,18 @@ public final class EidolonWorldGenerator implements IWorldGenerator {
     }
 
     public static boolean isStrayTowerBiome(World world, BlockPos pos) {
-        String name = world.getBiome(pos).getBiomeName().toLowerCase(Locale.ROOT);
+        String name = getBiomeId(world.getBiome(pos));
         for (String keyword : CommonConfig.strayTowerBiomeKeywords()) {
             if (keyword != null && !keyword.isEmpty() && name.contains(keyword.toLowerCase(Locale.ROOT))) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static String getBiomeId(Biome biome) {
+        ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
+        return id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
     }
 
     public static boolean isSurfaceStructureChunk(long worldSeed, int chunkX, int chunkZ) {

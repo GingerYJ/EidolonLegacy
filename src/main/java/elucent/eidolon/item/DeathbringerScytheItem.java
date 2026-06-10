@@ -11,6 +11,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -50,6 +52,7 @@ public class DeathbringerScytheItem extends EidolonSwordItem {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, net.minecraft.world.World worldIn, List<String> tooltip,
                                net.minecraft.client.util.ITooltipFlag flagIn) {
         tooltip.add("");

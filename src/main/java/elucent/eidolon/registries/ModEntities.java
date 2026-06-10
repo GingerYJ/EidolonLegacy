@@ -105,8 +105,7 @@ public final class ModEntities {
     }
 
     private static boolean isOverworldBiome(Biome biome) {
-        ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
-        String path = id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
+        String path = getBiomeId(biome);
         return !path.contains("hell")
                 && !path.contains("nether")
                 && !path.contains("sky")
@@ -115,18 +114,16 @@ public final class ModEntities {
     }
 
     private static boolean isForestBiome(Biome biome) {
-        String name = biome.getBiomeName().toLowerCase(Locale.ROOT);
+        String path = getBiomeId(biome);
         return isOverworldBiome(biome)
                 && (BiomeDictionary.hasType(biome, BiomeDictionary.Type.FOREST)
-                || name.contains("forest")
-                || name.contains("woods")
-                || name.contains("woodland"));
+                || path.contains("forest")
+                || path.contains("woods")
+                || path.contains("woodland"));
     }
 
     private static boolean isSlugBiome(Biome biome) {
-        ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
-        String path = id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
-        String name = biome.getBiomeName().toLowerCase(Locale.ROOT);
+        String path = getBiomeId(biome);
         return isOverworldBiome(biome)
                 && (path.endsWith(":redwood_taiga")
                 || path.endsWith(":redwood_taiga_hills")
@@ -136,11 +133,11 @@ public final class ModEntities {
                 || path.endsWith(":giant_spruce_taiga")
                 || path.endsWith(":old_growth_pine_taiga")
                 || path.endsWith(":old_growth_spruce_taiga")
-                || path.endsWith(":lush_caves")
-                || name.equals("mega taiga")
-                || name.equals("mega taiga hills")
-                || name.equals("mega spruce taiga")
-                || name.equals("mega spruce taiga hills")
-                || name.equals("lush caves"));
+                || path.endsWith(":lush_caves"));
+    }
+
+    private static String getBiomeId(Biome biome) {
+        ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
+        return id == null ? "" : id.toString().toLowerCase(Locale.ROOT);
     }
 }
