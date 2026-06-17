@@ -1,8 +1,9 @@
 package elucent.eidolon.item.curio;
 
 import baubles.api.BaubleType;
-import baubles.api.cap.BaubleItem;
+import baubles.api.IBauble;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
@@ -13,13 +14,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EidolonBaubleItem extends BaubleItem {
+public class EidolonBaubleItem extends Item implements IBauble {
+    private final BaubleType baubleType;
     private final String tooltipKey;
 
     public EidolonBaubleItem(BaubleType baubleType, String tooltipKey) {
-        super(baubleType);
+        this.baubleType = baubleType;
         this.tooltipKey = tooltipKey;
         setMaxStackSize(1);
+    }
+
+    @Override
+    public BaubleType getBaubleType(ItemStack stack) {
+        return baubleType;
     }
 
     @Override

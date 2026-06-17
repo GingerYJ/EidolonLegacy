@@ -56,5 +56,5 @@ dependencies {
 
     compileOnly fileTree(dir: 'run/client/mods', include: ['*HadEnoughItems*.jar'])
     compileOnly fileTree(dir: 'run/client/mods', include: ['*CraftTweaker*.jar'])
-    compileOnly fileTree(dir: 'run/client/mods', include: ['*Bubbles*.jar'])
+    compileOnly fileTree(dir: 'run/client/mods', include: ['*Bubbles*.jar', '*bubbles*.jar', '*Baubles*.jar', '*baubles*.jar'])
 }
