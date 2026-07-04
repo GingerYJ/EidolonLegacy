@@ -21,6 +21,8 @@ import java.util.List;
 
 public class CrucibleRecipeWrapper implements IRecipeWrapper {
     private static final ResourceLocation BACKGROUND = new ResourceLocation(Reference.MOD_ID, "textures/gui/codex_crucible_page.png");
+    private static final int STACK_COUNT_COLOR = 0x000000;
+    private static final int STACK_COUNT_X_OFFSET = 2;
 
     private final CrucibleRecipe recipe;
     private int stepScroll;
@@ -175,9 +177,14 @@ public class CrucibleRecipeWrapper implements IRecipeWrapper {
         }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         minecraft.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
-        minecraft.getRenderItem().renderItemOverlayIntoGUI(minecraft.fontRenderer, stack, x, y, null);
+        minecraft.getRenderItem().renderItemOverlayIntoGUI(minecraft.fontRenderer, stack, x, y, "");
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
+        if (stack.getCount() != 1) {
+            String count = String.valueOf(stack.getCount());
+            minecraft.fontRenderer.drawString(count, x + 19 - 2 - minecraft.fontRenderer.getStringWidth(count) + STACK_COUNT_X_OFFSET, y + 6 + 3,
+                    STACK_COUNT_COLOR);
+        }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
