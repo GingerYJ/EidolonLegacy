@@ -2,7 +2,7 @@
 # In Minecraft 1.12, item/tile base keys must stay untranslated; names live on .name keys.
 # en_us.lang mirrors zh_cn.lang so fallback never displays English.
 key.categories.eidolon=圣教
-itemGroup.eidolon=圣教
+itemGroup.eidolon=幻梦
 tile.eidolon.worktable.name=工作台
 tile.eidolon.crucible.name=坩埚
 tile.eidolon.stone_altar.name=石祭坛

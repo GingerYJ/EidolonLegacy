@@ -6,7 +6,7 @@ EidolonLegacy 是 Eidolon 的 Minecraft 1.12.2 / Cleanroom 移植版本。项目
 
 - Mod 名称：`EidolonLegacy`
 - Mod id：`eidolon`
-- 当前版本：`2.0.0`
+- 当前版本：`1.0.0`
 - 目标环境：Minecraft `1.12.2` / Cleanroom Loader
 - 作者：GingerYJ
 - 移植仓库：[GingerYJ/EidolonLegacy](https://github.com/GingerYJ/EidolonLegacy)
@@ -25,7 +25,7 @@ EidolonLegacy 是 Eidolon 的 Minecraft 1.12.2 / Cleanroom 移植版本。项目
 - 供物系统：祭坛容量和力量、方块供物、祭品盘供物、供物分组数值。
 - 工具与武器：仪式匕首、汲取之剑、劈裂之斧、反转之镐、收割者镰刀、死亡使者镰刀。
 - 魔杖与法杖：魂火魔杖、寒骨魔杖、召唤法杖，支持充能值显示和相关交互。
-- 饰品系统：接入 Bubbles/Baubles 风格装备栏，护符、戒指、腰带、护身符、头部饰品均可右键装备并触发对应效果。
+- 饰品系统：可选接入官方 Baubles 1.12-1.5.2 装备栏，护符、戒指、腰带、护身符、头部饰品均可右键装备并触发对应效果。
 - HEI 兼容：工作台、坩埚、祭坛仪式、祭坛供物、仪式匕首采集、灵魂碎片获取等分类。
 
 更详细的物品和方块使用方法见：[docs/player-guide.txt](docs/player-guide.txt)。
@@ -70,7 +70,7 @@ run/client/scripts/eidolon_ct2_smoke_test.zs
 构建成功后，正式运行 jar 位于：
 
 ```text
-build/libs/EidolonLegacy-2.0.0.jar
+build/libs/EidolonLegacy-1.0.0.jar
 ```
 
 不要把 `-dev.jar` 或 `-sources.jar` 当作正式运行 jar 放入 `mods`。
@@ -92,7 +92,7 @@ EidolonLegacy is a Minecraft 1.12.2 / Cleanroom port of Eidolon. The project is 
 
 - Mod name: `EidolonLegacy`
 - Mod id: `eidolon`
-- Version: `2.0.0`
+- Version: `1.0.0`
 - Target: Minecraft `1.12.2` / Cleanroom Loader
 - Author: GingerYJ
 - Port repository: [GingerYJ/EidolonLegacy](https://github.com/GingerYJ/EidolonLegacy)
@@ -111,7 +111,7 @@ EidolonLegacy is a Minecraft 1.12.2 / Cleanroom port of Eidolon. The project is 
 - Altar offerings: capacity and power values, block offerings, plate offerings, and grouped offering values.
 - Tools and weapons: Athame, Sapping Sword, Cleaving Axe, Reversal Pick, Reaper Scythe, and Deathbringer Scythe.
 - Wands and staff: Soulfire Wand, Bonechill Wand, and Summoning Staff, with charge display and related interactions.
-- Curio/trinket system: Bubbles/Baubles-style slots are wired for amulets, rings, belts, charms, and head curios, with right-click equip and gameplay effects.
+- Curio/trinket system: optional official Baubles `1.12-1.5.2` slots are wired for amulets, rings, belts, charms, and head curios, with right-click equip and gameplay effects.
 - HEI integration: Worktable, Crucible, Altar Rituals, Altar Offerings, Athame Harvest, and Soul Shard Harvest categories.
 
 For detailed item and block usage, see [docs/player-guide.txt](docs/player-guide.txt).
@@ -147,6 +147,8 @@ After launching the client, check `run/client/crafttweaker.log` to confirm wheth
 
 ## Building
 
+The build uses the supplied source trees as compile-only API inputs: `../Baubles-master`, `../CraftTweaker-1.12/ZenScript`, `../CraftTweaker-1.12/CraftTweaker2-API`, and `../HadEnoughItems-cleanroom/src/api/java`. The `CraftTweaker-1.12/ZenScript` submodule must be initialized. Baubles, CraftTweaker, and HEI remain optional at runtime and are not bundled into the Eidolon jar.
+
 Build the release jar with:
 
 ```powershell
@@ -156,7 +158,7 @@ Build the release jar with:
 The release jar will be generated at:
 
 ```text
-build/libs/EidolonLegacy-2.0.0.jar
+build/libs/EidolonLegacy-1.0.0.jar
 ```
 
 Do not use `-dev.jar` or `-sources.jar` as the normal runtime mod jar.

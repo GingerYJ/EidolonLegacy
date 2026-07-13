@@ -3,37 +3,24 @@ package elucent.eidolon.registries;
 import elucent.eidolon.Reference;
 import elucent.eidolon.Eidolon;
 import elucent.eidolon.gui.ModGuiHandler;
-import elucent.eidolon.item.curio.AngelSightItem;
+import elucent.eidolon.item.curio.BaubleItemFactory;
 import elucent.eidolon.item.AthameItem;
-import elucent.eidolon.item.curio.BasicAmuletItem;
-import elucent.eidolon.item.curio.BasicBeltItem;
-import elucent.eidolon.item.curio.BasicRingItem;
 import elucent.eidolon.item.BonechillWandItem;
 import elucent.eidolon.item.BonelordArmorItem;
 import elucent.eidolon.item.CleavingAxeItem;
 import elucent.eidolon.item.DeathbringerScytheItem;
-import elucent.eidolon.item.curio.EnervatingRingItem;
-import elucent.eidolon.item.curio.GlassHandItem;
-import elucent.eidolon.item.curio.GravityBeltItem;
-import elucent.eidolon.item.curio.MindShieldingPlateItem;
 import elucent.eidolon.item.NotetakingToolsItem;
-import elucent.eidolon.item.curio.PrestigiousPalmItem;
 import elucent.eidolon.item.RavenCloakItem;
 import elucent.eidolon.item.ReaperScytheItem;
-import elucent.eidolon.item.curio.ResoluteBeltItem;
 import elucent.eidolon.item.ReversalPickItem;
-import elucent.eidolon.item.curio.SanguineAmuletItem;
 import elucent.eidolon.item.SappingSwordItem;
 import elucent.eidolon.item.SilverArmorItem;
-import elucent.eidolon.item.curio.SoulboneAmuletItem;
 import elucent.eidolon.item.SoulfireWandItem;
 import elucent.eidolon.item.SpawnEntityItem;
 import elucent.eidolon.item.SummoningStaffItem;
-import elucent.eidolon.item.curio.TerminusMirrorItem;
 import elucent.eidolon.item.TopHatItem;
 import elucent.eidolon.item.TongsItem;
 import elucent.eidolon.item.UnholySymbolItem;
-import elucent.eidolon.item.curio.VoidAmuletItem;
 import elucent.eidolon.item.WandItem;
 import elucent.eidolon.item.WardedMailItem;
 import elucent.eidolon.item.WarlockRobesItem;
@@ -168,7 +155,7 @@ public final class ModItems {
     public static final Item WARPED_SPROUTS = food("warped_sprouts", 4, 0.6F,
             effect(ModPotions.ANCHORED, 900, 0));
     public static final Item MIRECAP = item("mirecap");
-    public static final Item GLASS_HAND = setup(new GlassHandItem(), "glass_hand");
+    public static final Item GLASS_HAND = bauble("GlassHandItem", "glass_hand");
     public static final Item UNHOLY_SYMBOL = setup(new UnholySymbolItem(), "unholy_symbol");
     public static final Item SILVER_SWORD = sword("silver_sword", SILVER_TOOL);
     public static final Item SILVER_PICKAXE = pickaxe("silver_pickaxe", SILVER_TOOL);
@@ -185,23 +172,23 @@ public final class ModItems {
     public static final Item REAPER_SCYTHE = reaperScythe("reaper_scythe", PEWTER_TOOL);
     public static final Item DEATHBRINGER_SCYTHE = deathbringerScythe("deathbringer_scythe", MAGIC_TOOL);
     public static final Item SAPPING_SWORD = sappingSword("sapping_sword", SANGUINE_TOOL);
-    public static final Item BASIC_AMULET = setup(new BasicAmuletItem(), "basic_amulet");
-    public static final Item SANGUINE_AMULET = setup(new SanguineAmuletItem(), "sanguine_amulet");
-    public static final Item VOID_AMULET = setup(new VoidAmuletItem(), "void_amulet");
-    public static final Item SOULBONE_AMULET = setup(new SoulboneAmuletItem(), "soulbone_amulet");
-    public static final Item BASIC_RING = setup(new BasicRingItem(), "basic_ring");
-    public static final Item ENERVATING_RING = setup(new EnervatingRingItem(), "enervating_ring");
-    public static final Item BASIC_BELT = setup(new BasicBeltItem(), "basic_belt");
-    public static final Item GRAVITY_BELT = setup(new GravityBeltItem(), "gravity_belt");
-    public static final Item RESOLUTE_BELT = setup(new ResoluteBeltItem(), "resolute_belt");
-    public static final Item MIND_SHIELDING_PLATE = setup(new MindShieldingPlateItem(), "mind_shielding_plate");
+    public static final Item BASIC_AMULET = bauble("BasicAmuletItem", "basic_amulet");
+    public static final Item SANGUINE_AMULET = bauble("SanguineAmuletItem", "sanguine_amulet");
+    public static final Item VOID_AMULET = bauble("VoidAmuletItem", "void_amulet");
+    public static final Item SOULBONE_AMULET = bauble("SoulboneAmuletItem", "soulbone_amulet");
+    public static final Item BASIC_RING = bauble("BasicRingItem", "basic_ring");
+    public static final Item ENERVATING_RING = bauble("EnervatingRingItem", "enervating_ring");
+    public static final Item BASIC_BELT = bauble("BasicBeltItem", "basic_belt");
+    public static final Item GRAVITY_BELT = bauble("GravityBeltItem", "gravity_belt");
+    public static final Item RESOLUTE_BELT = bauble("ResoluteBeltItem", "resolute_belt");
+    public static final Item MIND_SHIELDING_PLATE = bauble("MindShieldingPlateItem", "mind_shielding_plate");
     public static final Item SOULFIRE_WAND = soulfireWand("soulfire_wand");
     public static final Item BONECHILL_WAND = bonechillWand("bonechill_wand");
     public static final Item SUMMONING_STAFF = summoningStaff("summoning_staff");
     public static final Item ALCHEMISTS_TONGS = tongs("alchemists_tongs");
-    public static final Item ANGELS_SIGHT = setup(new AngelSightItem(), "angels_sight");
-    public static final Item TERMINUS_MIRROR = setup(new TerminusMirrorItem(), "terminus_mirror");
-    public static final Item PRESTIGIOUS_PALM = setup(new PrestigiousPalmItem(), "prestigious_palm");
+    public static final Item ANGELS_SIGHT = bauble("AngelSightItem", "angels_sight");
+    public static final Item TERMINUS_MIRROR = bauble("TerminusMirrorItem", "terminus_mirror");
+    public static final Item PRESTIGIOUS_PALM = bauble("PrestigiousPalmItem", "prestigious_palm");
     public static final Item COALFIRED_ENGINE = item("coalfired_engine");
     public static final Item WARLOCK_HAT = warlockArmor("warlock_hat", EntityEquipmentSlot.HEAD);
     public static final Item WARLOCK_CLOAK = warlockArmor("warlock_cloak", EntityEquipmentSlot.CHEST);
@@ -474,6 +461,10 @@ public final class ModItems {
         item.setTranslationKey(Reference.MOD_ID + "." + name);
         item.setCreativeTab(ModCreativeTabs.EIDOLON);
         return item;
+    }
+
+    private static Item bauble(String className, String name) {
+        return setup(BaubleItemFactory.create(className), name);
     }
 
     private static final class SimplePickaxe extends ItemPickaxe {

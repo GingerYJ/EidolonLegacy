@@ -5,6 +5,8 @@ import elucent.eidolon.Eidolon;
 import elucent.eidolon.diagnostics.RuntimeDiagnostics;
 import elucent.eidolon.event.GameplayEvents;
 import elucent.eidolon.gui.ModGuiHandler;
+import elucent.eidolon.item.curio.BaubleItemFactory;
+import elucent.eidolon.item.curio.CurioEvents;
 import elucent.eidolon.item.NotetakingToolsItem;
 import elucent.eidolon.network.ModNetwork;
 import elucent.eidolon.recipes.CrucibleRecipes;
@@ -41,6 +43,10 @@ public class CommonProxy implements IProxy {
         Spells.init();
         MinecraftForge.EVENT_BUS.register(NotetakingToolsItem.class);
         MinecraftForge.EVENT_BUS.register(new GameplayEvents());
+        if (BaubleItemFactory.isBaublesLoaded()) {
+            MinecraftForge.EVENT_BUS.register(CurioEvents.class);
+            Eidolon.LOGGER.info("Official Baubles detected; Eidolon curios are enabled");
+        }
         NetworkRegistry.INSTANCE.registerGuiHandler(Eidolon.instance, new ModGuiHandler());
     }
 

@@ -8,7 +8,7 @@ public final class ModCreativeTabs {
     public static final CreativeTabs EIDOLON = new CreativeTabs(Reference.MOD_ID) {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(ModItems.TEST_SIGIL);
+            return new ItemStack(ModItems.CODEX);
         }
     };
 

@@ -7,12 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public final class BaubleUtil {
-    private static final Method ENTITY_HANDLER_METHOD = findEntityHandlerMethod();
-
     private BaubleUtil() {
     }
 
@@ -38,24 +33,9 @@ public final class BaubleUtil {
     }
 
     private static IBaublesItemHandler getBaublesHandler(EntityLivingBase entity) {
-        if (entity instanceof EntityPlayer) {
-            return BaublesApi.getBaublesHandler((EntityPlayer) entity);
-        }
-        if (ENTITY_HANDLER_METHOD == null) {
+        if (!(entity instanceof EntityPlayer)) {
             return null;
         }
-        try {
-            return (IBaublesItemHandler) ENTITY_HANDLER_METHOD.invoke(null, entity);
-        } catch (IllegalAccessException | InvocationTargetException | ClassCastException e) {
-            return null;
-        }
-    }
-
-    private static Method findEntityHandlerMethod() {
-        try {
-            return BaublesApi.class.getMethod("getBaublesHandler", EntityLivingBase.class);
-        } catch (NoSuchMethodException e) {
-            return null;
-        }
+        return BaublesApi.getBaublesHandler((EntityPlayer) entity);
     }
 }

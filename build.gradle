@@ -179,13 +179,35 @@ if (!propertyBool('enable_shadow')) {
     shadowJar.enabled = false
 }
 
+def optionalApiSources = [
+        file("${rootProject.projectDir}/src/optional-api/java"),
+        file("${rootProject.projectDir}/../Baubles-master/src/main/java"),
+        file("${rootProject.projectDir}/../CraftTweaker-1.12/ZenScript/src/main/java"),
+        file("${rootProject.projectDir}/../CraftTweaker-1.12/CraftTweaker2-API/src/main/java"),
+        file("${rootProject.projectDir}/../HadEnoughItems-cleanroom/src/api/java")
+]
+
 compileJava {
     sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
+
+    // Compile optional integrations against the supplied API sources without bundling third-party classes.
+    def missingApiSources = optionalApiSources.findAll { !it.isDirectory() }
+    if (missingApiSources.isEmpty()) {
+        options.sourcepath = files(optionalApiSources)
+        options.compilerArgs.add('-implicit:none')
+    } else {
+        throw new GradleException("Required compile-only API source directories are missing: ${missingApiSources.join(', ')}")
+    }
 }
 
 jar {
     archiveClassifier = 'dev'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Optional integrations are compile-only API inputs; never package third-party classes into Eidolon.
+    exclude 'baubles/**'
+    exclude 'crafttweaker/**'
+    exclude 'stanhebben/**'
+    exclude 'mezz/jei/**'
     if (configurations.contain.size() > 0) {
         into('/') {
             from configurations.contain
